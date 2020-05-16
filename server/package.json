@@ -1,15 +1,15 @@
 {
-	"name": "lsp-sample-server",
+	"name": "md-server",
 	"description": "Example implementation of a language server in node.",
 	"version": "1.0.0",
-	"author": "Microsoft Corporation",
+	"author": "Mewo and Alby",
 	"license": "MIT",
 	"engines": {
 		"node": "*"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
+		"url": "https://github.com/albysmith/mdls"
 	},
 	"dependencies": {
 		"vscode-languageserver": "^6.1.1",
