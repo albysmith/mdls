@@ -10,6 +10,8 @@ import {
 	LanguageClient,
 	LanguageClientOptions,
 	ServerOptions,
+	ExecutableOptions,
+	Executable,
 	TransportKind
 } from 'vscode-languageclient';
 
@@ -17,9 +19,10 @@ let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
 	// The server is implemented in node
-	let serverModule = context.asAbsolutePath(
-		path.join('server', 'out', 'server.js')
-	);
+	// let serverModule = context.asAbsolutePath(
+	// 	path.join('server', 'out', 'server.js')
+	// );
+	let serverPath: Executable = { command: context.asAbsolutePath(path.join('rust-server', 'target', 'debug', 'mdls_server.exe')) };
 	// The debug options for the server
 	// --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
 	let debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
@@ -27,12 +30,8 @@ export function activate(context: ExtensionContext) {
 	// If the extension is launched in debug mode then the debug server options are used
 	// Otherwise the run options are used
 	let serverOptions: ServerOptions = {
-		run: { module: serverModule, transport: TransportKind.ipc },
-		debug: {
-			module: serverModule,
-			transport: TransportKind.ipc,
-			options: debugOptions
-		}
+		run: serverPath,
+		debug: serverPath
 	};
 
 	// Options to control the language client
