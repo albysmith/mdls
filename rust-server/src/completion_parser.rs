@@ -69,12 +69,18 @@ fn get_node_and_string(params: CompletionParams) -> Option<(usize, String)> {
         .to_file_path()
     {
         if let Ok(string) = fs::read_to_string(path) {
-            let line = string
+            if let Some(line) = string
                 .lines()
                 .nth(params.text_document_position.position.line as usize)
-                .expect("line iterator died");
-            let byte_position = string.find(line).expect("ok this line should be here");
-            Some((byte_position, string))
+            {
+                if let Some(byte_position) = string.find(line) {
+                    Some((byte_position, string))
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
         } else {
             None
         }
