@@ -14,6 +14,8 @@ use lsp_types::{
 
 use lsp_server::{Connection, Message, Request, RequestId, Response};
 
+mod completion_parser;
+use completion_parser::*;
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
     // our logging only write out to stderr.
@@ -26,15 +28,15 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
 
     // Run the server and wait for the two threads to end (typically by trigger LSP Exit event).
     let server_settings = ServerCapabilities {
-        text_document_sync: Some(TextDocumentSyncCapability::Options(
-            TextDocumentSyncOptions {
-                open_close: Some(true),
-                change: Some(TextDocumentSyncKind::Full),
-                will_save: None,
-                will_save_wait_until: None,
-                save: Some(SaveOptions::default()),
-            },
-        )),
+        // text_document_sync: Some(TextDocumentSyncCapability::Options(
+        //     TextDocumentSyncOptions {
+        //         open_close: Some(true),
+        //         change: Some(TextDocumentSyncKind::Full),
+        //         will_save: None,
+        //         will_save_wait_until: None,
+        //         save: Some(SaveOptions::default()),
+        //     },
+        // )),
         hover_provider: Some(true),
         completion_provider: Some(CompletionOptions {
             resolve_provider: None,
@@ -109,6 +111,7 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
         //     .into(),
         // ),
         experimental: Default::default(),
+        ..ServerCapabilities::default()
     };
     let server_capabilities = serde_json::to_value(&server_settings).unwrap();
     let initialization_params = connection.initialize(server_capabilities)?;
@@ -155,10 +158,10 @@ fn main_loop(
                     continue;
                 }
                 if let Ok((id, params)) = request.cast::<Completion>() {
-                    info!("got COMPLETION request!!!");
-                    let mut item = CompletionItem::default();
-                    item.label = "cheese".to_owned();
-                    let result = CompletionResponse::Array(vec![item]);
+                    info!("got COMPLETION request!!! {:#?}", params);
+
+       
+                    let result = CompletionResponse::Array(simple_complete(params));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
                         id,
