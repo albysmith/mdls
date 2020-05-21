@@ -2,14 +2,14 @@ use std::error::Error;
 
 use log::info;
 use lsp_types::notification::DidChangeTextDocument;
-use lsp_types::request::{GotoDefinition, HoverRequest};
+use lsp_types::request::*;
 use lsp_types::{
-    CodeActionOptions, CodeActionProviderCapability, CodeLensOptions, CompletionOptions,
-    DocumentOnTypeFormattingOptions, FoldingRangeProviderCapability,
-    ImplementationProviderCapability, InitializeParams, RenameOptions, RenameProviderCapability,
-    SaveOptions, SelectionRangeProviderCapability, ServerCapabilities, SignatureHelpOptions,
-    TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
-    TypeDefinitionProviderCapability, WorkDoneProgressOptions,
+    CodeActionOptions, CodeActionProviderCapability, CodeLensOptions, CompletionItem,
+    CompletionOptions, CompletionResponse, DocumentOnTypeFormattingOptions,
+    FoldingRangeProviderCapability, ImplementationProviderCapability, InitializeParams,
+    RenameOptions, RenameProviderCapability, SaveOptions, SelectionRangeProviderCapability,
+    ServerCapabilities, SignatureHelpOptions, TextDocumentSyncCapability, TextDocumentSyncKind,
+    TextDocumentSyncOptions, TypeDefinitionProviderCapability, WorkDoneProgressOptions,
 };
 
 use lsp_server::{Connection, Message, Request, RequestId, Response};
@@ -134,9 +134,44 @@ fn main_loop(
                     return Ok(());
                 }
                 info!("got request: {:?}", req);
+
+                let mut request = ReqMessage { req: req };
+                // let req_info = request.cast::<HoverRequest>();
+                if let Ok((id, params)) = request.cast::<HoverRequest>() {
+                    info!("got Hover request #{}: {:?}", id, params);
+                    let result = Some(lsp_types::Hover {
+                        contents: lsp_types::HoverContents::Scalar(
+                            lsp_types::MarkedString::String("Hello World!".to_string()),
+                        ),
+                        range: None,
+                    });
+                    let result = serde_json::to_value(&result).unwrap();
+                    let resp = Response {
+                        id,
+                        result: Some(result),
+                        error: None,
+                    };
+                    connection.sender.send(Message::Response(resp))?;
+                    continue;
+                }
+                if let Ok((id, params)) = request.cast::<Completion>() {
+                    info!("got COMPLETION request!!!");
+                    let mut item = CompletionItem::default();
+                    item.label = "cheese".to_owned();
+                    let result = CompletionResponse::Array(vec![item]);
+                    let result = serde_json::to_value(&result).unwrap();
+                    let resp = Response {
+                        id,
+                        result: Some(result),
+                        error: None,
+                    };
+                    connection.sender.send(Message::Response(resp))?;
+                    continue;
+                }
+
                 // match cast::<GotoDefinition>(req) {
                 //     Ok((id, params)) => {
-                //         info!("got gotoDefinition request #{}: {:?}", id, params);
+                // info!("got gotoDefinition request #{}: {:?}", id, params);
                 //         let result = Some(lsp_types::GotoDefinitionResponse::Array(Vec::new()));
                 //         let result = serde_json::to_value(&result).unwrap();
                 //         let resp = Response {
@@ -149,26 +184,26 @@ fn main_loop(
                 //     }
                 //     Err(req) => req,
                 // };
-                match cast::<HoverRequest>(req) {
-                    Ok((id, params)) => {
-                        info!("got Hover request #{}: {:?}", id, params);
-                        let result = Some(lsp_types::Hover {
-                            contents: lsp_types::HoverContents::Scalar(
-                                lsp_types::MarkedString::String("Hello World!".to_string()),
-                            ),
-                            range: None,
-                        });
-                        let result = serde_json::to_value(&result).unwrap();
-                        let resp = Response {
-                            id,
-                            result: Some(result),
-                            error: None,
-                        };
-                        connection.sender.send(Message::Response(resp))?;
-                        continue;
-                    }
-                    Err(req) => (),
-                }
+                // match cast::<HoverRequest>(req) {
+                //     Ok((id, params)) => {
+                //         info!("got Hover request #{}: {:?}", id, params);
+                //         let result = Some(lsp_types::Hover {
+                //             contents: lsp_types::HoverContents::Scalar(
+                //                 lsp_types::MarkedString::String("Hello World!".to_string()),
+                //             ),
+                //             range: None,
+                //         });
+                //         let result = serde_json::to_value(&result).unwrap();
+                //         let resp = Response {
+                //             id,
+                //             result: Some(result),
+                //             error: None,
+                //         };
+                //         connection.sender.send(Message::Response(resp))?;
+                //         continue;
+                //     }
+                //     Err(req) => (),
+                // }
                 // ...
             }
             Message::Response(resp) => {
@@ -176,17 +211,6 @@ fn main_loop(
             }
             Message::Notification(not) => {
                 info!("got notification: {:?}", not);
-                // match cast::<DidChangeTextDocument>(change) {
-                //     Ok((doc, content)) => {
-                //         info!("got gotoDefinition request #{}: {:?}", doc, content);
-                //         let result = Some(DiagnosticRelatedInformation::Array(Vec::new()));
-                //         let result = serde_json::to_value(&result).unwrap();
-                //         let resp = Response { id, result: Some(result), error: None };
-                //         connection.sender.send(Message::Response(resp))?;
-                //         continue;
-                //     }
-                //     Err(change) => change,
-                // }
             }
         }
     }
@@ -201,30 +225,17 @@ where
     req.extract(R::METHOD)
 }
 
-// no_run
-// Content-Length: 85
+#[derive(Clone)]
+struct ReqMessage {
+    req: Request,
+}
 
-// {"jsonrpc": "2.0", "method": "initialize", "id": 1, "params": {"capabilities": {}}}
-
-// This will respond with a server response. Then send it a `initialized` notification which will
-// have no response.
-
-// no_run
-// Content-Length: 59
-
-// {"jsonrpc": "2.0", "method": "initialized", "params": {}}
-
-// Once these two are sent, then we enter the main loop of the server. The only request this
-// example can handle is `gotoDefinition`:
-
-// no_run
-// Content-Length: 159
-
-// {"jsonrpc": "2.0", "method": "textDocument/definition", "id": 2, "params": {"textDocument": {"uri": "file://temp"}, "position": {"line": 1, "character": 1}}}
-
-// To finish up without errors, send a shutdown request:
-
-// no_run
-// Content-Length: 67
-
-// {"jsonrpc": "2.0", "method": "shutdown", "id": 3, "params": null}
+impl ReqMessage {
+    fn cast<R>(&mut self) -> Result<(RequestId, R::Params), Request>
+    where
+        R: lsp_types::request::Request,
+        R::Params: serde::de::DeserializeOwned,
+    {
+        self.clone().req.extract(R::METHOD)
+    }
+}

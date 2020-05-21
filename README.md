@@ -4,7 +4,9 @@ The beginnings of a Language Server + VSCode Extension for Mdscript.
 
 ## Functionality
 
-This Language Server works for plain text file. It has no currently usable features.
+This Language Server works for plain text file. It currently has 2 usable features:
+ - auto-complete the word "cheese"
+ - hover will show "Hello World!" on every word
 
 ## Structure
 
