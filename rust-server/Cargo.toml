@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 roxmltree = "0.11.0"
 lsp-server = "0.3.2"
-lsp-types = "0.63.0"
+lsp-types = "0.74.1"
 flexi_logger = "0.14.0"
 
 [dependencies.serde]
