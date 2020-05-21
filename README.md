@@ -18,8 +18,8 @@ This Language Server works for plain text file. It currently has 2 usable featur
 │   │   └── extension.ts // Language Client entry point
 ├── package.json // The extension manifest.
 └── rust-server // Language Server written in Rust
-    └── src
-        └── main.rs // Language Server entry point
+    ├── src
+    │   └── main.rs // Language Server entry point
     └── target
         └── debug // Build folder
             └── mdls_server.exe // Executable for Language Server
