@@ -3,14 +3,15 @@ use std::error::Error;
 use log::info;
 use lsp_types::notification::DidChangeTextDocument;
 use lsp_types::request::*;
-use lsp_types::{
-    CodeActionOptions, CodeActionProviderCapability, CodeLensOptions, CompletionItem,
-    CompletionOptions, CompletionResponse, DocumentOnTypeFormattingOptions,
-    FoldingRangeProviderCapability, ImplementationProviderCapability, InitializeParams,
-    RenameOptions, RenameProviderCapability, SaveOptions, SelectionRangeProviderCapability,
-    ServerCapabilities, SignatureHelpOptions, TextDocumentSyncCapability, TextDocumentSyncKind,
-    TextDocumentSyncOptions, TypeDefinitionProviderCapability, WorkDoneProgressOptions,
-};
+use lsp_types::*;
+// use lsp_types::{
+//     CodeActionOptions, CodeActionProviderCapability, CodeLensOptions, CompletionItem,
+//     CompletionOptions, CompletionResponse, DocumentOnTypeFormattingOptions,
+//     FoldingRangeProviderCapability, ImplementationProviderCapability, InitializeParams,
+//     RenameOptions, RenameProviderCapability, SaveOptions, SelectionRangeProviderCapability,
+//     ServerCapabilities, SignatureHelpOptions, TextDocumentSyncCapability, TextDocumentSyncKind,
+//     TextDocumentSyncOptions, TypeDefinitionProviderCapability, WorkDoneProgressOptions,
+// };
 
 use lsp_server::{Connection, Message, Request, RequestId, Response};
 
@@ -157,12 +158,7 @@ fn main_loop(
                 let mut request = ReqMessage { req: req };
                 if let Ok((id, params)) = request.cast::<HoverRequest>() {
                     info!("got Hover request #{}: {:?}", id, params);
-                    let result = Some(lsp_types::Hover {
-                        contents: lsp_types::HoverContents::Scalar(
-                            lsp_types::MarkedString::String("Hello World!".to_string()),
-                        ),
-                        range: None,
-                    });
+                    let result = get_hover_value(params);
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
                         id,

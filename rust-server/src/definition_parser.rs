@@ -5,7 +5,7 @@ use std::fs;
 pub fn simple_definition(params: GotoDefinitionParams) -> Vec<Location> {
     info!("called simple_definition function");
     let mut locations = vec![];
-    if let Some((byte_position, string)) = get_node_and_string(&params) {
+    if let Some((_byte_position, string)) = get_node_and_string(&params) {
         if let Ok(doc) = roxmltree::Document::parse(&string) {
             // let file_uri = params.text_document_position_params.text_document.uri;
             let line = string
