@@ -16,8 +16,21 @@ use lsp_server::{Connection, Message, Request, RequestId, Response};
 
 mod completion_parser;
 use completion_parser::*;
+
 mod definition_parser;
 use definition_parser::*;
+
+mod type_checker;
+use type_checker::*;
+
+mod hover;
+use hover::*;
+
+mod expression_parser;
+use expression_parser::*;
+
+mod scriptproperties;
+use scriptproperties::*;
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
@@ -142,7 +155,6 @@ fn main_loop(
                 info!("got request: {:?}", req);
 
                 let mut request = ReqMessage { req: req };
-                // let req_info = request.cast::<HoverRequest>();
                 if let Ok((id, params)) = request.cast::<HoverRequest>() {
                     info!("got Hover request #{}: {:?}", id, params);
                     let result = Some(lsp_types::Hover {

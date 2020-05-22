@@ -1,0 +1,13 @@
+x:\Rust Projects\mdls\properties_gen\target\debug\deps\quote-12f2f1656acf2abf.rmeta: C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\lib.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\ext.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\format.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\ident_fragment.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\to_tokens.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\runtime.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\spanned.rs
+
+x:\Rust Projects\mdls\properties_gen\target\debug\deps\libquote-12f2f1656acf2abf.rlib: C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\lib.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\ext.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\format.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\ident_fragment.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\to_tokens.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\runtime.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\spanned.rs
+
+x:\Rust Projects\mdls\properties_gen\target\debug\deps\quote-12f2f1656acf2abf.d: C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\lib.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\ext.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\format.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\ident_fragment.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\to_tokens.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\runtime.rs C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\spanned.rs
+
+C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\lib.rs:
+C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\ext.rs:
+C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\format.rs:
+C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\ident_fragment.rs:
+C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\to_tokens.rs:
+C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\runtime.rs:
+C:\Users\alby\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.6\src\spanned.rs:
