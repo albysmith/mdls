@@ -12,6 +12,7 @@ lsp-server = "0.3.2"
 lsp-types = "0.74.1"
 flexi_logger = "0.14.0"
 
+
 [dependencies.serde]
 features = ["derive"]
 version = "1.0.83"

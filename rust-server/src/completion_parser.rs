@@ -1,80 +1,90 @@
 use log::info;
 use lsp_types::{CompletionItem, CompletionParams};
-use roxmltree::*;
 use std::fs;
+
+//
+
 pub fn simple_complete(params: CompletionParams) -> Vec<CompletionItem> {
     let mut namespace = vec![];
-    let error_string = format!(
-        "uri conversion is fucked {:#?}",
-        params
-            .text_document_position
-            .text_document
-            .uri
-            .to_file_path()
-            .unwrap()
-    );
-
-    let string = fs::read_to_string(
-        params
-            .text_document_position
-            .text_document
-            .uri
-            .to_file_path()
-            .unwrap(),
-    )
-    .unwrap();
-    let doc = roxmltree::Document::parse(&string).expect("file isnt xml");
-    for node in doc.descendants() {
-        if node.tag_name().name() == "cue" {
-            if let Some(n) = node.attribute("namespace") {
-                if n == "this" {
-                    namespace.clear()
-                }
-            }
-        } else {
-            if let Some(n) = node.parent() {
-                if n.tag_name().name() == "actions" {
-                    if let Some(attr) = node.attribute("name") {
-                        let item = CompletionItem {
-                            label: attr.to_owned(),
-                            ..CompletionItem::default()
-                        };
-                        if !namespace.contains(&item) {
-                            namespace.push(item);
+    if let Some((byte_position, string)) = get_node_and_string(params) {
+        if let Ok(doc) = roxmltree::Document::parse(&string) {
+            for (i, node) in doc.descendants().enumerate() {
+                //filter against nodes that contain the whole fucking file in their range....
+                match node.tag_name().name() {
+                    "mdscript" | "cues" | "cue" | "conditions" | "delay" | "actions" | "" => (),
+                    _ => {
+                        if node.range().end >= byte_position {
+                            info!(
+                                "end node range:{} byte_positon: {} \n\n node name: {}",
+                                node.range().end,
+                                byte_position,
+                                node.tag_name().name()
+                            );
+                            for ancestor in node.ancestors() {
+                                info!("ancestor {}", ancestor.tag_name().name());
+                                for f_child in ancestor.first_children() {
+                                    info!("f_child {}", f_child.tag_name().name());
+                                    match f_child.tag_name().name() {
+                                        "actions" => {
+                                            for actions_child in f_child.children() {
+                                                info!(
+                                                    "actions_child {}",
+                                                    actions_child.tag_name().name()
+                                                );
+                                                if let Some(attr) = actions_child.attribute("name")
+                                                {
+                                                    info!("COMPLETION ADDED {}", attr);
+                                                    add_completion_item(&mut namespace, attr);
+                                                }
+                                            }
+                                        }
+                                        _ => (),
+                                    }
+                                }
+                            }
+                            break;
                         }
                     }
                 }
             }
         }
-        let pos = doc.text_pos_at(node.range().start);
-        if pos.row as u64 == params.text_document_position.position.line {
-            break;
-        }
     }
     namespace
 }
-pub fn parent_complete(params: CompletionParams) -> Vec<CompletionItem> {
-    let mut namespace = vec![];
-    let error_string = format!(
-        "uri conversion is fucked {:#?}",
-        params
-            .text_document_position
-            .text_document
-            .uri
-            .to_file_path()
-            .unwrap()
-    );
+fn add_completion_item(namespace: &mut Vec<CompletionItem>, attr: &str) {
+    let item = CompletionItem {
+        label: attr.to_owned(),
+        ..CompletionItem::default()
+    };
+    if !namespace.contains(&item) {
+        namespace.push(item);
+    }
+}
 
-    let string = fs::read_to_string(
-        params
-            .text_document_position
-            .text_document
-            .uri
-            .to_file_path()
-            .unwrap(),
-    )
-    .unwrap();
-    let doc = roxmltree::Document::parse(&string).expect("file isnt xml");
-
-    namespace
+fn get_node_and_string(params: CompletionParams) -> Option<(usize, String)> {
+    if let Ok(path) = params
+        .text_document_position
+        .text_document
+        .uri
+        .to_file_path()
+    {
+        if let Ok(string) = fs::read_to_string(path) {
+            if let Some(line) = string
+                .lines()
+                .nth(params.text_document_position.position.line as usize)
+            {
+                if let Some(byte_position) = string.find(line) {
+                    Some((byte_position, string))
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    } else {
+        None
+    }
 }
