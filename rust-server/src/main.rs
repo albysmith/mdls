@@ -147,17 +147,17 @@ fn main_loop(
     let _params: InitializeParams = serde_json::from_value(params).unwrap();
     info!("starting example main loop");
     for msg in &connection.receiver {
-        info!("got msg: {:?}", msg);
+        // info!("got msg: {:?}", msg);
         match msg {
             Message::Request(req) => {
                 if connection.handle_shutdown(&req)? {
                     return Ok(());
                 }
-                info!("got request: {:?}", req);
+                // info!("got request: {:?}", req);
 
                 let mut request = ReqMessage { req: req };
                 if let Ok((id, params)) = request.cast::<HoverRequest>() {
-                    info!("got Hover request #{}: {:?}", id, params);
+                    // info!("got Hover request #{}: {:?}", id, params);
                     let result = get_hover_value(params);
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
@@ -169,7 +169,7 @@ fn main_loop(
                     continue;
                 }
                 if let Ok((id, params)) = request.cast::<Completion>() {
-                    info!("got COMPLETION request!!! {:#?}", params);
+                    // info!("got COMPLETION request!!! {:#?}", params);
 
                     let result = CompletionResponse::Array(simple_complete(params));
                     let result = serde_json::to_value(&result).unwrap();
@@ -182,7 +182,7 @@ fn main_loop(
                     continue;
                 }
                 if let Ok((id, params)) = request.cast::<GotoDefinition>() {
-                    info!("got gotoDefinition request #{}: {:?}", id, params);
+                    // info!("got gotoDefinition request #{}: {:?}", id, params);
                     let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
                         params,
                     )));
@@ -233,10 +233,10 @@ fn main_loop(
                 // ...
             }
             Message::Response(resp) => {
-                info!("got response: {:?}", resp);
+                // info!("got response: {:?}", resp);
             }
             Message::Notification(not) => {
-                info!("got notification: {:?}", not);
+                // info!("got notification: {:?}", not);
             }
         }
     }
