@@ -51,6 +51,7 @@ pub fn simple_complete(params: CompletionParams) -> Vec<CompletionItem> {
     }
     namespace
 }
+
 fn add_completion_item(namespace: &mut Vec<CompletionItem>, attr: &str) {
     let item = CompletionItem {
         label: attr.to_owned(),
@@ -60,7 +61,6 @@ fn add_completion_item(namespace: &mut Vec<CompletionItem>, attr: &str) {
         namespace.push(item);
     }
 }
-
 fn get_node_and_string(params: CompletionParams) -> Option<(usize, String)> {
     if let Ok(path) = params
         .text_document_position
