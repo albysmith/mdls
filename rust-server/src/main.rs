@@ -16,6 +16,9 @@ use lsp_server::{Connection, Message, Request, RequestId, Response};
 
 mod completion_parser;
 use completion_parser::*;
+mod definition_parser;
+use definition_parser::*;
+
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
     // our logging only write out to stderr.
@@ -160,7 +163,6 @@ fn main_loop(
                 if let Ok((id, params)) = request.cast::<Completion>() {
                     info!("got COMPLETION request!!! {:#?}", params);
 
-       
                     let result = CompletionResponse::Array(simple_complete(params));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
@@ -171,7 +173,20 @@ fn main_loop(
                     connection.sender.send(Message::Response(resp))?;
                     continue;
                 }
-
+                if let Ok((id, params)) = request.cast::<GotoDefinition>() {
+                    info!("got gotoDefinition request #{}: {:?}", id, params);
+                    let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
+                        params,
+                    )));
+                    let result = serde_json::to_value(&result).unwrap();
+                    let resp = Response {
+                        id,
+                        result: Some(result),
+                        error: None,
+                    };
+                    connection.sender.send(Message::Response(resp))?;
+                    continue;
+                }
                 // match cast::<GotoDefinition>(req) {
                 //     Ok((id, params)) => {
                 // info!("got gotoDefinition request #{}: {:?}", id, params);
