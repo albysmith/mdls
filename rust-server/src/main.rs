@@ -33,6 +33,9 @@ use expression_parser::*;
 mod scriptproperties;
 use scriptproperties::*;
 
+mod data_store;
+use data_store::*;
+
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
     // our logging only write out to stderr.
@@ -144,10 +147,11 @@ fn main_loop(
     connection: &Connection,
     params: serde_json::Value,
 ) -> Result<(), Box<dyn Error + Sync + Send>> {
-    let _params: InitializeParams = serde_json::from_value(params).unwrap();
+    let params: InitializeParams = serde_json::from_value(params).unwrap();
     info!("starting example main loop");
 
     // make our entity component system here
+    let ecs = parse_file(params.root_uri.clone());
     // also bring over our scriptproperties
     let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
 
