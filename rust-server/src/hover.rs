@@ -1,9 +1,8 @@
 use log::info;
 use lsp_server::{RequestId, Response};
-use lsp_types::{Hover, HoverParams, Location, MarkedString, Position, Range};
+use lsp_types::{Hover, HoverParams, MarkedString};
 use std::fs;
 
-// mod scriptproperties;
 use crate::scriptproperties::*;
 
 pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptProperties) -> Response {
