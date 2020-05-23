@@ -8,7 +8,7 @@ pub fn simple_complete(params: CompletionParams) -> Vec<CompletionItem> {
     let mut namespace = vec![];
     if let Some((byte_position, string)) = get_node_and_string(params) {
         if let Ok(doc) = roxmltree::Document::parse(&string) {
-            for (i, node) in doc.descendants().enumerate() {
+            for (_i, node) in doc.descendants().enumerate() {
                 //filter against nodes that contain the whole fucking file in their range....
                 match node.tag_name().name() {
                     "mdscript" | "cues" | "cue" | "conditions" | "delay" | "actions" | "" => (),
