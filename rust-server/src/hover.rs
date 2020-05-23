@@ -1,14 +1,12 @@
 use log::info;
-use lsp_types::{Hover, HoverParams, Location, MarkedString, Position, Range};
+use lsp_server::{RequestId, Response};
+use lsp_types::{Hover, HoverParams, MarkedString};
 use std::fs;
 
-// mod scriptproperties;
 use crate::scriptproperties::*;
 
-pub fn get_hover_value(params: HoverParams) -> Option<Hover> {
+pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptProperties) -> Response {
     info!("called hover function");
-    let file = include_str!("reference/scriptproperties.xml");
-    let scriptps = ScriptProperties::new(file.to_string());
 
     // get &str for what I'm hovering on
     if let Some((_byte_position, string)) = get_node_and_string(&params) {
@@ -38,7 +36,7 @@ pub fn get_hover_value(params: HoverParams) -> Option<Hover> {
                             match character {
                                 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k'
                                 | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u'
-                                | 'v' | 'w' | 'x' | 'y' | 'z' => {
+                                | 'v' | 'w' | 'x' | 'y' | 'z' | '$' => {
                                     target.push(character);
                                 }
                                 _ => {
@@ -78,16 +76,31 @@ pub fn get_hover_value(params: HoverParams) -> Option<Hover> {
                             )))
                         }
 
-                        return Some(lsp_types::Hover {
+                        let result = Some(lsp_types::Hover {
                             contents: lsp_types::HoverContents::Array(hovers),
                             range: None,
                         });
+
+                        let result = serde_json::to_value(&result).unwrap();
+                        let resp = Response {
+                            id,
+                            result: Some(result),
+                            error: None,
+                        };
+                        return resp;
                     }
                 }
             }
         }
     }
-    None
+    let result: Option<Hover> = None;
+    let result = serde_json::to_value(&result).unwrap();
+    let resp = Response {
+        id,
+        result: Some(result),
+        error: None,
+    };
+    return resp;
 }
 
 fn get_node_and_string(params: &HoverParams) -> Option<(usize, String)> {

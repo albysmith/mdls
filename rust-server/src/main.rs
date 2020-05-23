@@ -146,6 +146,11 @@ fn main_loop(
 ) -> Result<(), Box<dyn Error + Sync + Send>> {
     let _params: InitializeParams = serde_json::from_value(params).unwrap();
     info!("starting example main loop");
+
+    // make our entity component system here
+    // also bring over our scriptproperties
+    let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
+
     for msg in &connection.receiver {
         // info!("got msg: {:?}", msg);
         match msg {
@@ -158,13 +163,7 @@ fn main_loop(
                 let mut request = ReqMessage { req: req };
                 if let Ok((id, params)) = request.cast::<HoverRequest>() {
                     // info!("got Hover request #{}: {:?}", id, params);
-                    let result = get_hover_value(params);
-                    let result = serde_json::to_value(&result).unwrap();
-                    let resp = Response {
-                        id,
-                        result: Some(result),
-                        error: None,
-                    };
+                    let resp = get_hover_resp(id, params, &scriptps);
                     connection.sender.send(Message::Response(resp))?;
                     continue;
                 }

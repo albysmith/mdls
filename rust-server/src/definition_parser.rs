@@ -28,7 +28,29 @@ pub fn simple_definition(params: GotoDefinitionParams) -> Vec<Location> {
                             attr.value_range().start,
                             attr.value_range().end
                         );
-                        let def_start = string.find(attr.value()).unwrap();
+                        let char_into_attr = character - attr.value_range().start;
+                        let mut target = String::new();
+                        let mut flag = false;
+                        for (i, character) in attr.value().chars().enumerate() {
+                            if i == char_into_attr {
+                                flag = true
+                            }
+                            match character.to_ascii_lowercase() {
+                                'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k'
+                                | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u'
+                                | 'v' | 'w' | 'x' | 'y' | 'z' | '$' => {
+                                    target.push(character);
+                                }
+                                _ => {
+                                    if flag == true {
+                                        break;
+                                    } else {
+                                        target.clear()
+                                    }
+                                }
+                            }
+                        }
+                        let def_start = string.find(&target).unwrap();
                         let def_start_pos = doc.text_pos_at(def_start);
                         let def_range = Range {
                             start: Position::new(
