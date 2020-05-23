@@ -7,7 +7,7 @@ pub struct ScriptProperties {
 }
 
 impl ScriptProperties {
-    pub fn new(string: String) -> Self {
+    pub fn new(string: &str) -> Self {
         let doc = roxmltree::Document::parse(&string).expect("malformed xml i guess");
         let mut sp = ScriptProperties { data: vec![] };
         let mut ap = ApplicableProperties {
