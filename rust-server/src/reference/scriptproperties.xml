@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<?xml-stylesheet href="scriptproperties.xsl" type="text/xsl," ?>
+<?xml-stylesheet href="scriptproperties.xsl" type="text/xsl" ?>
 <scriptproperties xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="scriptproperties.xsd">
 
   <textdb source="../t/0001-l044.xml" />
 
   <!-- All component types -->
 
-  <datatype name="component" >
-    <property name="exists"          result="true iff the component exists in the game graph" type="boolean" />
+  <datatype name="component">
+    <property name="exists"         result="true iff the component exists in the game graph" type="boolean" />
     <property name="isoperational"  result="true iff the component exists in the game graph and is operational" type="boolean" />
     <property name="iswreck"        result="true iff the component exists in the game graph and is wrecked" type="boolean" />
     <property name="isconstruction" result="true iff the component exists in the game graph and is in construction state" type="boolean" />
@@ -131,7 +131,6 @@
 
   <datatype name="destructible" type="component">
     <property name="isfunctional" result="true iff the object exists in the game graph and is functional" type="boolean" />
-    <property name="isindestructible" result="true iff object has hull, is not invulnerable, and has a minimum hull value of 0" type="boolean"/>
     <property name="hull" result="Hull value" type="hitpoints" />
     <property name="maxhull" result="Max hull value" type="hitpoints" />
     <property name="hullpercentage" result="Hull value percentage" type="float" />
@@ -242,13 +241,10 @@
     <property name="assignment" result="Assignment of this subordinate under the commanding object" type="assignment" />
     <property name="canuseassignment.{$assignment}.{$controllable}" result="Can this object use the specified assignment when subordinate to the specified commander. $assignment can be null." type="boolean"/>
     <property name="commanderentity" result="Commander entity (if this is a subordinate)" type="entity" />
-    <property name="activesubordinategroupids" result="List of subordinate group IDs with assigned ships" type="list" />
     <property name="subordinates" result="List of subordinates" type="list" />
     <property name="subordinates.{$assignment}" result="List of subordinates of the commander with the specified assignment" type="list" />
-    <property name="subordinategroupassignment.{$subordinategroupid}" result="Assignment of subordinate group with specified ID" type="assignment"/>
     <property name="subordinategroupdockoverride" result="Whether subordinate group of controllable is set to always dock at commander" type="boolean"/>
     <property name="subordinategroupid" result="Subordinate group ID that controllable currently belongs to" type="integer"/>
-    <property name="subordinatesingroup.{$subordinategroupid}" result="List of direct subordinates of the commander in the specified subordinate group" type="list" />
     <property name="allsubordinates" result="List of all subordinates, including those not directly commanded by this" type="list" />
     <property name="allcommanders" result="List of all commanders, including those not directly commanding this" type="list" />
     <property name="canhavecommander.{$component}" result="true iff the $component (or its controllable context) can be a commander for this" type="boolean" />
@@ -527,16 +523,9 @@
     <property name="loadoutlevel" result="Loadout level used to generate this container (valid for job ships and generated stations)" type="float" />
     <property name="rawloadoutlevel" result="Loadout level used to generate this container without fallback to parameters.xml. You need to check against -1 before using this." type="float" />
     <property name="buildpricefactor" result="Additional factor applied to price for building ships (based on build queue size)" type="float" />
-    <property name="isbuildrestricted.{$faction}" result="true iff container cannot build for this faction (deprecated but kept for compatibility, prefer using .maybuildfor.{$faction})" type="boolean" />
+    <property name="isbuildrestricted.{$faction}" result="true iff container cannot build for this faction" type="boolean" />
     <property name="hasresourcesfor.{$ware}" result="true iff container can produce or build, and has enough resources to produce or build the ware" type="boolean" />
     <property name="hasresourcesfor.{$table}" result="true iff container can produce or build, and has enough resources to produce or build all of the wares in the amounts specified. $table is a table that maps wares to corresponding amounts." type="boolean" />
-    <property name="maybesuppliedby.{$faction}" result="true iff container is allowed to be supplied by this faction" type="boolean" />
-    <property name="maybesuppliedby.[$faction, $ware]" result="true iff container is allowed to be supplied with ware by this faction" type="boolean" />
-    <property name="maybuyfrom.{$faction}" result="true iff container is allowed to buy from this faction" type="boolean" />
-    <property name="maybuyfrom.[$faction, $ware]" result="true iff container is allowed to buy ware from this faction" type="boolean" />
-    <property name="maybuildfor.{$faction}" result="true iff container is allowed to build for this faction" type="boolean" />
-    <property name="maysellto.{$faction}" result="true iff container is allowed to sell to this faction" type="boolean" />
-    <property name="maysellto.[$faction, $ware]" result="true iff container is allowed to sell ware to this faction" type="boolean" />
   </datatype>
 
   <datatype name="ship" type="container">
@@ -1118,8 +1107,8 @@
     <property name="issellerpassive" result="true iff the seller of this ship-to-ship ware/crew exchange is flagged as being the passive party (stationary)" type="boolean" />
     <property name="ispassive.{$container}" result="true iff the trade is used for ship-to-ship ware/crew exchange and the supplied container is the passive party (stationary)" type="boolean" />
     <property name="exchangepartner.{$container}" result="The exchange partner for this trade deal. Used for trade orders to specify who is trading with whom when the trade deal only has buyer OR seller defined. Will return the 'other' container if $container is part of the trade." type="container" />
-    <property name="restriction.factions" result="List of factions that are allowed to perform the trade (empty if unrestricted, modified by restriction.inverted)" type="list" />
-    <property name="restriction.inverted" result="true iff the faction restriction is inverted and the trade is available to everyone except the restriction.factions" type="boolean" />
+    <property name="restriction.faction" result="Faction that a trade is restricted to (null if unrestricted)" type="faction" />
+    <property name="restriction.inverted" result="true iff the faction restriction is inverted and the trade is available to everyone except the restriction.faction" type="boolean" />
   </datatype>
 
   <datatype name="build">
@@ -1387,7 +1376,6 @@
     <property name="research.unlocked" result="true iff this this ware has been researched by the player" type="boolean" />
     <property name="research.precursors" result="Research precursors to research this ware" type="warelist" />
     <property name="research.requiredprecursors" result="Research precursors required to unlock access to ware" type="warelist" />
-    <property name="research.resources" result="Resources needed to process the research" type="wareamountlist" />
   </datatype>
 
   <datatype name="lookuplist" pseudo="true">
@@ -1561,7 +1549,7 @@
   <!-- MD-specific types -->
 
   <datatype name="cue">
-    <property name="exists"  result="true iff cue exists" type="boolean" />
+    <property name="exists" result="true iff cue exists" type="boolean" />
     <property name="name" result="Cue name (unqualified)" type="string" />
     <property name="version" result="Version" type="integer" />
     <property name="time" result="Time of cue activation (or time of last time actions were performed, if the active cue is waiting for a subsequent actions block" type="time" />
