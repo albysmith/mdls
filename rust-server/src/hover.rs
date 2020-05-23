@@ -7,9 +7,7 @@ use crate::scriptproperties::*;
 
 pub fn get_hover_value(params: HoverParams) -> Option<Hover> {
     info!("called hover function");
-    let file = include_str!(
-        "E:/vscode_extensions/language-server/rust-server/src/reference/scriptproperties.xml"
-    );
+    let file = include_str!("reference/scriptproperties.xml");
     let scriptps = ScriptProperties::new(file.to_string());
 
     // get &str for what I'm hovering on
