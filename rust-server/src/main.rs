@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use log::info;
-use lsp_types::notification::DidChangeTextDocument;
+// use lsp_types::notification::DidChangeTextDocument;
 use lsp_types::request::*;
 use lsp_types::*;
 // use lsp_types::{
@@ -23,6 +23,9 @@ use definition_parser::*;
 
 mod type_checker;
 use type_checker::*;
+
+mod type_annotations;
+use type_annotations::*;
 
 mod hover;
 use hover::*;
@@ -246,13 +249,13 @@ fn main_loop(
     Ok(())
 }
 
-fn cast<R>(req: Request) -> Result<(RequestId, R::Params), Request>
-where
-    R: lsp_types::request::Request,
-    R::Params: serde::de::DeserializeOwned,
-{
-    req.extract(R::METHOD)
-}
+// fn cast<R>(req: Request) -> Result<(RequestId, R::Params), Request>
+// where
+//     R: lsp_types::request::Request,
+//     R::Params: serde::de::DeserializeOwned,
+// {
+//     req.extract(R::METHOD)
+// }
 
 #[derive(Clone)]
 struct ReqMessage {
