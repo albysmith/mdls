@@ -6,7 +6,7 @@ use std::fs;
 use crate::scriptproperties::*;
 
 pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptProperties) -> Response {
-    info!("called hover function");
+    // info!("called hover function");
 
     // get &str for what I'm hovering on
     if let Some((_byte_position, string)) = get_node_and_string(&params) {
@@ -22,7 +22,7 @@ pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptPrope
                 .clone() as usize;
             if let Ok(line_doc) = roxmltree::Document::parse(&line.unwrap()) {
                 let node = line_doc.root().first_child().unwrap();
-                info!("HOVER line_doc node: {:?}", node.tag_name());
+                // info!("HOVER line_doc node: {:?}", node.tag_name());
                 for attr in node.attributes() {
                     if attr.value_range().end > character && attr.value_range().start < character {
                         // now we have the attribute

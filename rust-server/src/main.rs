@@ -147,11 +147,11 @@ fn main_loop(
     connection: &Connection,
     params: serde_json::Value,
 ) -> Result<(), Box<dyn Error + Sync + Send>> {
-    let params: InitializeParams = serde_json::from_value(params).unwrap();
+    let _params: InitializeParams = serde_json::from_value(params).unwrap();
     info!("starting example main loop");
 
     // make our entity component system here
-    let ecs = parse_file(params.root_uri.clone());
+    let mut ecs = parse_file(_params.root_uri.clone());
     // also bring over our scriptproperties
     let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
 
@@ -187,7 +187,7 @@ fn main_loop(
                 if let Ok((id, params)) = request.cast::<GotoDefinition>() {
                     // info!("got gotoDefinition request #{}: {:?}", id, params);
                     let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
-                        params,
+                        params, &mut ecs,
                     )));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
