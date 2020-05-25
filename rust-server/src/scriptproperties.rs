@@ -1,5 +1,6 @@
 use std::fs;
 use std::iter;
+use serde::Deserialize;
 
 #[derive(Debug, Clone)]
 pub struct ScriptProperties {
@@ -141,6 +142,7 @@ fn match_datatype(string: Option<&str>) -> Datatypes {
         "navcontext" => Datatypes::Navcontext,
         "nonplayer" => Datatypes::Nonplayer,
         "notification" => Datatypes::Notification,
+        "npc" => Datatypes::NPC,
         "npctemplate" => Datatypes::Npctemplate,
         "npctemplateentry" => Datatypes::Npctemplateentry,
         "numeric" => Datatypes::Numeric,
@@ -164,6 +166,7 @@ fn match_datatype(string: Option<&str>) -> Datatypes {
         "shieldgenerator" => Datatypes::Shieldgenerator,
         "ship" => Datatypes::Ship,
         "shiptype" => Datatypes::Shiptype,
+        "signalleak" => Datatypes::Signalleak,
         "signalleaktype" => Datatypes::Signalleaktype,
         "skilltype" => Datatypes::Skilltype,
         "space" => Datatypes::Space,
@@ -239,7 +242,7 @@ pub struct Property {
     pub prop_type: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Deserialize, Clone)]
 pub enum Datatypes {
     Activity,
     Adsign,
@@ -322,6 +325,7 @@ pub enum Datatypes {
     Money,
     Moodlevel,
     Navcontext,
+    NPC,
     Nonplayer,
     Notification,
     Npctemplate,
@@ -347,6 +351,7 @@ pub enum Datatypes {
     Shieldgenerator,
     Ship,
     Shiptype,
+    Signalleak,
     Signalleaktype,
     Skilltype,
     Space,

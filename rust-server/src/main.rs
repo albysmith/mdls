@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use log::info;
-use lsp_types::notification::DidChangeTextDocument;
+// use lsp_types::notification::DidChangeTextDocument;
 use lsp_types::request::*;
 use lsp_types::*;
 // use lsp_types::{
@@ -24,6 +24,9 @@ use definition_parser::*;
 mod type_checker;
 use type_checker::*;
 
+mod type_annotations;
+use type_annotations::*;
+
 mod hover;
 use hover::*;
 
@@ -32,6 +35,12 @@ use expression_parser::*;
 
 mod scriptproperties;
 use scriptproperties::*;
+
+mod data_store;
+use data_store::*;
+
+mod tests;
+
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
@@ -148,6 +157,7 @@ fn main_loop(
     info!("starting example main loop");
 
     // make our entity component system here
+    let mut ecs = parse_file(_params.root_uri.clone());
     // also bring over our scriptproperties
     let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
 
@@ -183,7 +193,7 @@ fn main_loop(
                 if let Ok((id, params)) = request.cast::<GotoDefinition>() {
                     // info!("got gotoDefinition request #{}: {:?}", id, params);
                     let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
-                        params,
+                        params, &mut ecs,
                     )));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
@@ -242,13 +252,13 @@ fn main_loop(
     Ok(())
 }
 
-fn cast<R>(req: Request) -> Result<(RequestId, R::Params), Request>
-where
-    R: lsp_types::request::Request,
-    R::Params: serde::de::DeserializeOwned,
-{
-    req.extract(R::METHOD)
-}
+// fn cast<R>(req: Request) -> Result<(RequestId, R::Params), Request>
+// where
+//     R: lsp_types::request::Request,
+//     R::Params: serde::de::DeserializeOwned,
+// {
+//     req.extract(R::METHOD)
+// }
 
 #[derive(Clone)]
 struct ReqMessage {
