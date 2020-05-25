@@ -1,5 +1,6 @@
 use std::fs;
 use std::iter;
+use serde::Deserialize;
 
 #[derive(Debug, Clone)]
 pub struct ScriptProperties {
@@ -241,7 +242,7 @@ pub struct Property {
     pub prop_type: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Deserialize, Clone)]
 pub enum Datatypes {
     Activity,
     Adsign,

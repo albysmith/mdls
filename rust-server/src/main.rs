@@ -39,6 +39,9 @@ use scriptproperties::*;
 mod data_store;
 use data_store::*;
 
+mod tests;
+
+
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
     // our logging only write out to stderr.

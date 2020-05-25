@@ -7,23 +7,23 @@ Method (
 	output: [
 		Output (
 			attr: "amounts",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 		Output (
 			attr: "categories",
-			datatype: [List],
-			contains: [Unitcategory],
+			datatype: Some([List]),
+			contains: Some([Unitcategory]),
 		),
 		Output (
 			attr: "macros",
-			datatype: [List],
-			contains: [Macro],
+			datatype: Some([List]),
+			contains: Some([Macro]),
 		),
 		Output (
 			attr: "mks",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 	],
 ),
@@ -33,23 +33,23 @@ Method (
 	output: [
 		Output (
 			attr: "amounts",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 		Output (
 			attr: "categories",
-			datatype: [List],
-			contains: [Deployablecategory],
+			datatype: Some([List]),
+			contains: Some([Deployablecategory]),
 		),
 		Output (
 			attr: "macros",
-			datatype: [List],
-			contains: [Macro],
+			datatype: Some([List]),
+			contains: Some([Macro]),
 		),
 		Output (
 			attr: "mks",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 	],
 ),
@@ -59,13 +59,13 @@ Method (
 	output: [
 		Output (
 			attr: "amounts",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 		Output (
 			attr: "macros",
-			datatype: [List],
-			contains: [Macro],
+			datatype: Some([List]),
+			contains: Some([Macro]),
 		),
 	],
 ),
@@ -75,7 +75,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Integer],
+			datatype: Some([Integer]),
 		),
 	],
 ),
@@ -85,7 +85,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Integer],
+			datatype: Some([Integer]),
 		),
 	],
 ),
@@ -95,14 +95,14 @@ Method (
 	output: [
 		Output (
 			attr: "insufficient",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 		Output (
 			attr: "shortage",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),Output (
 			attr: "overflow",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 	],
 ),
@@ -112,8 +112,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Faction],
+			datatype: Some([List]),
+			contains: Some([Faction]),
 		),
 	],
 ),
@@ -123,8 +123,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Faction],
+			datatype: Some([List]),
+			contains: Some([Faction]),
 		),
 	],
 ),
@@ -134,8 +134,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Macro],
+			datatype: Some([List]),
+			contains: Some([Macro]),
 		),
 	],
 ),
@@ -145,13 +145,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Entity],
-			contains: [Entity],
+			datatype: Some([List, Entity]),
+			contains: Some([Entity]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Entity],
+			datatype: Some([Group]),
+			contains: Some([Entity]),
 		),
 	],
 ),
@@ -161,7 +161,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Unknown],
+			datatype: Some([Unknown]),
 		),
 	],
 ),
@@ -171,7 +171,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -181,7 +181,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Integer],
+			datatype: Some([Integer]),
 		),
 	],
 ),
@@ -191,7 +191,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Time],
+			datatype: Some([Time]),
 		),
 	],
 ),
@@ -201,7 +201,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 	],
 ),
@@ -211,13 +211,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Entity, List],
-			contains: [Entity],
+			datatype: Some([Entity, List]),
+			contains: Some([Entity]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Entity],
+			datatype: Some([Group]),
+			contains: Some([Entity]),
 		),
 	],
 ),
@@ -228,7 +228,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -239,7 +239,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -250,7 +250,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -260,7 +260,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -270,7 +270,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -280,7 +280,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -290,11 +290,11 @@ Method (
 	output: [
 		Output (
 			attr: "resultunits",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 		Output (
 			attr: "resultammo",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 	],
 ),
@@ -304,7 +304,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Integer],
+			datatype: Some([Integer]),
 		),
 	],
 ),
@@ -314,7 +314,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -325,7 +325,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Componentslot],
+			datatype: Some([Componentslot]),
 		),
 	],
 ),
@@ -335,7 +335,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Componentslot],
+			datatype: Some([Componentslot]),
 		),
 	],
 ),
@@ -345,7 +345,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Unknown],
+			datatype: Some([Unknown]),
 		),
 	],
 ),
@@ -355,7 +355,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Unknown],
+			datatype: Some([Unknown]),
 		),
 	],
 ),
@@ -365,7 +365,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Unknown],
+			datatype: Some([Unknown]),
 		),
 	],
 ),
@@ -375,33 +375,33 @@ Method (
 	output: [
 		Output (
 			attr: "amounts",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 		Output (
 			attr: "currentroles",
-			datatype: [List],
-			contains: [Entityrole],
+			datatype: Some([List]),
+			contains: Some([Entityrole]),
 		),
 		Output (
 			attr: "newroles",
-			datatype: [List],
-			contains: [Entityrole],
+			datatype: Some([List]),
+			contains: Some([Entityrole]),
 		),
 		Output (
 			attr: "races",
-			datatype: [List],
-			contains: [Race],
+			datatype: Some([List]),
+			contains: Some([Race]),
 		),
 		Output (
 			attr: "skills",
-			datatype: [List],
-			contains: [Skilltype],
+			datatype: Some([List]),
+			contains: Some([Skilltype]),
 		),
 		Output (
 			attr: "people",
-			datatype: [List],
-			contains: [Entity],
+			datatype: Some([List]),
+			contains: Some([Entity]),
 		),
 	],
 ),
@@ -411,8 +411,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [NPC],
+			datatype: Some([List]),
+			contains: Some([NPC]),
 		),
 	],
 ),
@@ -422,7 +422,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Buildstorage],
+			datatype: Some([Buildstorage]),
 		),
 	],
 ),
@@ -432,13 +432,13 @@ Method (
 	output: [
 		Output (
 			attr: "jobs",
-			datatype: [List],
-			contains: [String],
+			datatype: Some([List]),
+			contains: Some([String]),
 		),
 		Output (
 			attr: "amount",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 	],
 ),
@@ -448,8 +448,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Macro],
-			contains: [Macro],
+			datatype: Some([List, Macro]),
+			contains: Some([Macro]),
 		),
 	],
 ),
@@ -459,8 +459,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List, String],
-			contains: [String],
+			datatype: Some([List, String]),
+			contains: Some([String]),
 		),
 	],
 ),
@@ -470,7 +470,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Ship],
+			datatype: Some([Ship]),
 		),
 	],
 ),
@@ -480,13 +480,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Ship],
-			contains: [Ship],
+			datatype: Some([List, Ship]),
+			contains: Some([Ship]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Ship],
+			datatype: Some([Group]),
+			contains: Some([Ship]),
 		),
 	],
 ),
@@ -496,7 +496,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -506,13 +506,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Ship],
-			contains: [Ship],
+			datatype: Some([List, Ship]),
+			contains: Some([Ship]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Ship],
+			datatype: Some([Group]),
+			contains: Some([Ship]),
 		),
 	],
 ),
@@ -522,7 +522,7 @@ Method (
 	output: [
 		Output (
 			attr: "groupname",
-			datatype: [Group],
+			datatype: Some([Group]),
 		),
 	],
 ),
@@ -533,7 +533,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List],
+			datatype: Some([List]),
 		),
 	],
 ),
@@ -543,13 +543,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -559,13 +559,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -575,13 +575,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -591,13 +591,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Signalleak],
-			contains: [Signalleak],
+			datatype: Some([List, Signalleak]),
+			contains: Some([Signalleak]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Signalleak],
+			datatype: Some([Group]),
+			contains: Some([Signalleak]),
 		),
 	],
 ),
@@ -607,7 +607,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Unknown],
+			datatype: Some([Unknown]),
 		),
 	],
 ),
@@ -619,7 +619,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Unknown],
+			datatype: Some([Unknown]),
 		),
 	],
 ),
@@ -629,7 +629,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Rotation],
+			datatype: Some([Rotation]),
 		),
 	],
 ),
@@ -641,7 +641,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Constructionsequence],
+			datatype: Some([Constructionsequence]),
 		),
 	],
 ),
@@ -652,7 +652,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 	],
 ),
@@ -662,18 +662,18 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Loadout],
+			datatype: Some([List]),
+			contains: Some([Loadout]),
 		),
 		Output (
 			attr: "used",
-			datatype: [List],
-			contains: [Macro, Ware],
+			datatype: Some([List]),
+			contains: Some([Macro, Ware]),
 		),
 		Output (
 			attr: "remaining",
-			datatype: [List],
-			contains: [Macro, Ware],
+			datatype: Some([List]),
+			contains: Some([Macro, Ware]),
 		),
 	],
 ),
@@ -683,7 +683,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Loadout],
+			datatype: Some([Loadout]),
 		),
 	],
 ),
@@ -693,7 +693,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Loadout],
+			datatype: Some([Loadout]),
 		),
 	],
 ),
@@ -703,7 +703,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -713,7 +713,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -723,7 +723,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Trade],
+			datatype: Some([Trade]),
 		),
 	],
 ),
@@ -734,7 +734,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -744,7 +744,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -757,11 +757,11 @@ Method (
 	output: [
 		Output (
 			attr: "posname",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 		Output (
 			attr: "rotname",
-			datatype: [Rotation],
+			datatype: Some([Rotation]),
 		),
 	],
 ),
@@ -771,7 +771,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -781,7 +781,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -791,7 +791,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Rotation],
+			datatype: Some([Rotation]),
 		),
 	],
 ),
@@ -801,13 +801,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Ship],
-			contains: [Ship],
+			datatype: Some([List, Ship]),
+			contains: Some([Ship]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Ship],
+			datatype: Some([Group]),
+			contains: Some([Ship]),
 		),
 	],
 ),
@@ -817,13 +817,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Station],
-			contains: [Station],
+			datatype: Some([List, Station]),
+			contains: Some([Station]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Station],
+			datatype: Some([Group]),
+			contains: Some([Station]),
 		),
 	],
 ),
@@ -833,13 +833,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Station],
-			contains: [Station],
+			datatype: Some([List, Station]),
+			contains: Some([Station]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Station],
+			datatype: Some([Group]),
+			contains: Some([Station]),
 		),
 	],
 ),
@@ -849,13 +849,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Module],
-			contains: [Module],
+			datatype: Some([List, Module]),
+			contains: Some([Module]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Module],
+			datatype: Some([Group]),
+			contains: Some([Module]),
 		),
 	],
 ),
@@ -865,13 +865,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -881,15 +881,15 @@ Method (
 	output: [
 		Output (
 			attr: "interiorname",
-			datatype: [Room],
+			datatype: Some([Room]),
 		),
 		Output (
 			attr: "corridorname",
-			datatype: [Room],
+			datatype: Some([Room]),
 		),
 		Output (
 			attr: "roomname",
-			datatype: [Room],
+			datatype: Some([Room]),
 		),
 	],
 ),
@@ -899,7 +899,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Entity],
+			datatype: Some([Entity]),
 		),
 	],
 ),
@@ -909,7 +909,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [NPC],
+			datatype: Some([NPC]),
 		),
 	],
 ),
@@ -919,7 +919,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Npctemplate],
+			datatype: Some([Npctemplate]),
 		),
 	],
 ),
@@ -929,7 +929,7 @@ Method (
 	output: [
 		Output (
 			attr: "amount",
-			datatype: [Integer],
+			datatype: Some([Integer]),
 		),
 	],
 ),
@@ -939,7 +939,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Integer],
+			datatype: Some([Integer]),
 		),
 	],
 ),
@@ -949,7 +949,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Float],
+			datatype: Some([Float]),
 		),
 	],
 ),
@@ -959,11 +959,11 @@ Method (
 	output: [
 		Output (
 			attr: "posname",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 		Output (
 			attr: "rotname",
-			datatype: [Rotation],
+			datatype: Some([Rotation]),
 		),
 	],
 ),
@@ -973,8 +973,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -984,8 +984,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List, Trade],
-			contains: [Trade],
+			datatype: Some([List, Trade]),
+			contains: Some([Trade]),
 		),
 	],
 ),
@@ -995,7 +995,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Object],
+			datatype: Some([Object]),
 		),
 	],
 ),
@@ -1005,24 +1005,24 @@ Method (
 	output: [
 		Output (
 			attr: "wares",
-			datatype: [List],
-			contains: [Ware],
+			datatype: Some([List]),
+			contains: Some([Ware]),
 		),
 		Output (
 			attr: "zone",
-			datatype: [Zone],
+			datatype: Some([Zone]),
 		),
 		Output (
 			attr: "sector",
-			datatype: [Sector],
+			datatype: Some([Sector]),
 		),
 		Output (
 			attr: "distance",
-			datatype: [Length],
+			datatype: Some([Length]),
 		),
 		Output (
 			attr: "position",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -1032,7 +1032,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Component],
+			datatype: Some([Component]),
 		),
 	],
 ),
@@ -1042,7 +1042,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -1052,13 +1052,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Cluster],
-			contains: [Cluster],
+			datatype: Some([List, Cluster]),
+			contains: Some([Cluster]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Cluster],
+			datatype: Some([Group]),
+			contains: Some([Cluster]),
 		),
 	],
 ),
@@ -1068,12 +1068,12 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Cluster],
-			contains: [Cluster],
+			datatype: Some([List, Cluster]),
+			contains: Some([Cluster]),
 		),
 		Output (
 			attr: "distances",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 	],
 ),
@@ -1083,12 +1083,12 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Sector],
-			contains: [Sector],
+			datatype: Some([List, Sector]),
+			contains: Some([Sector]),
 		),
 		Output (
 			attr: "distances",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 	],
 ),
@@ -1098,8 +1098,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Macro],
-			contains: [Macro],
+			datatype: Some([List, Macro]),
+			contains: Some([Macro]),
 		),
 	],
 ),
@@ -1109,13 +1109,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Room],
-			contains: [Room],
+			datatype: Some([List, Room]),
+			contains: Some([Room]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Room],
+			datatype: Some([Group]),
+			contains: Some([Room]),
 		),
 	],
 ),
@@ -1125,13 +1125,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Dockingbay],
-			contains: [Dockingbay],
+			datatype: Some([List, Dockingbay]),
+			contains: Some([Dockingbay]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Dockingbay],
+			datatype: Some([Group]),
+			contains: Some([Dockingbay]),
 		),
 	],
 ),
@@ -1141,7 +1141,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Dockingbay],
+			datatype: Some([Dockingbay]),
 		),
 	],
 ),
@@ -1151,13 +1151,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1167,8 +1167,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 	],
 ),
@@ -1178,8 +1178,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 	],
 ),
@@ -1189,8 +1189,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 	],
 ),
@@ -1200,20 +1200,20 @@ Method (
 	output: [
 		Output (
 			attr: "context",
-			datatype: [Component],
+			datatype: Some([Component]),
 		),
 		Output (
 			attr: "position",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 		Output (
 			attr: "room",
-			datatype: [Room],
+			datatype: Some([Room]),
 		),
 		Output (
 			attr: "tags",
-			datatype: [List],
-			contains: [Tag],
+			datatype: Some([List]),
+			contains: Some([Tag]),
 		),
 	],
 ),
@@ -1223,8 +1223,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 	],
 ),
@@ -1234,8 +1234,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 	],
 ),
@@ -1245,8 +1245,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 	],
 ),
@@ -1256,13 +1256,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Component],
-			contains: [Component],
+			datatype: Some([List, Component]),
+			contains: Some([Component]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Component],
+			datatype: Some([Group]),
+			contains: Some([Component]),
 		),
 	],
 ),
@@ -1272,20 +1272,20 @@ Method (
 	output: [
 		Output (
 			attr: "wares",
-			datatype: [List],
-			contains: [Ware],
+			datatype: Some([List]),
+			contains: Some([Ware]),
 		),
 		Output (
 			attr: "zone",
-			datatype: [Zone],
+			datatype: Some([Zone]),
 		),
 		Output (
 			attr: "sector",
-			datatype: [Sector],
+			datatype: Some([Sector]),
 		),
 		Output (
 			attr: "position",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -1295,7 +1295,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -1305,7 +1305,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [String],
+			datatype: Some([String]),
 		),
 	],
 ),
@@ -1315,7 +1315,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -1325,7 +1325,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -1335,13 +1335,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1351,13 +1351,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Sector],
-			contains: [Sector],
+			datatype: Some([List, Sector]),
+			contains: Some([Sector]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Sector],
+			datatype: Some([Group]),
+			contains: Some([Sector]),
 		),
 	],
 ),
@@ -1367,8 +1367,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List, Trade],
-			contains: [Trade],
+			datatype: Some([List, Trade]),
+			contains: Some([Trade]),
 		),
 	],
 ),
@@ -1378,13 +1378,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Ship],
-			contains: [Ship],
+			datatype: Some([List, Ship]),
+			contains: Some([Ship]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Ship],
+			datatype: Some([Group]),
+			contains: Some([Ship]),
 		),
 	],
 ),
@@ -1394,13 +1394,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Ship],
-			contains: [Ship],
+			datatype: Some([List, Ship]),
+			contains: Some([Ship]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Ship],
+			datatype: Some([Group]),
+			contains: Some([Ship]),
 		),
 	],
 ),
@@ -1410,13 +1410,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Station],
-			contains: [Station],
+			datatype: Some([List, Station]),
+			contains: Some([Station]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Station],
+			datatype: Some([Group]),
+			contains: Some([Station]),
 		),
 	],
 ),
@@ -1426,13 +1426,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Station],
-			contains: [Station],
+			datatype: Some([List, Station]),
+			contains: Some([Station]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Station],
+			datatype: Some([Group]),
+			contains: Some([Station]),
 		),
 	],
 ),
@@ -1442,13 +1442,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Gate],
-			contains: [Gate],
+			datatype: Some([List, Gate]),
+			contains: Some([Gate]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Gate],
+			datatype: Some([Group]),
+			contains: Some([Gate]),
 		),
 	],
 ),
@@ -1458,8 +1458,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 	],
 ),
@@ -1469,13 +1469,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Highway],
-			contains: [Highway],
+			datatype: Some([List, Highway]),
+			contains: Some([Highway]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Highway],
+			datatype: Some([Group]),
+			contains: Some([Highway]),
 		),
 	],
 ),
@@ -1485,13 +1485,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Zone],
-			contains: [Zone],
+			datatype: Some([List, Zone]),
+			contains: Some([Zone]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Zone],
+			datatype: Some([Group]),
+			contains: Some([Zone]),
 		),
 	],
 ),
@@ -1501,7 +1501,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Hitpoints],
+			datatype: Some([Hitpoints]),
 		),
 	],
 ),
@@ -1511,13 +1511,13 @@ Method (
 	output: [
 		Output (
 			attr: "macro",
-			datatype: [List, Macro],
-			contains: [Macro],
+			datatype: Some([List, Macro]),
+			contains: Some([Macro]),
 		),
 		Output (
 			attr: "reference",
-			datatype: [List, NPC],
-			contains: [NPC],
+			datatype: Some([List, NPC]),
+			contains: Some([NPC]),
 		),
 	],
 ),
@@ -1527,7 +1527,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Table],
+			datatype: Some([Table]),
 		),
 	],
 ),
@@ -1537,11 +1537,11 @@ Method (
 	output: [
 		Output (
 			attr: "position",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 		Output (
 			attr: "rotation",
-			datatype: [Rotation],
+			datatype: Some([Rotation]),
 		),
 	],
 ),
@@ -1551,11 +1551,11 @@ Method (
 	output: [
 		Output (
 			attr: "position",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 		Output (
 			attr: "rotation",
-			datatype: [Rotation],
+			datatype: Some([Rotation]),
 		),
 	],
 ),
@@ -1565,13 +1565,13 @@ Method (
 	output: [
 		Output (
 			attr: "component",
-			datatype: [List, Component],
-			contains: [Component],
+			datatype: Some([List, Component]),
+			contains: Some([Component]),
 		),
 		Output (
 			attr: "offset",
-			datatype: [List, Position],
-			contains: [Position],
+			datatype: Some([List, Position]),
+			contains: Some([Position]),
 		),
 	],
 ),
@@ -1581,8 +1581,8 @@ Method (
 	output: [
 		Output (
 			attr: "component",
-			datatype: [List, Component],
-			contains: [Component],
+			datatype: Some([List, Component]),
+			contains: Some([Component]),
 		),
 	],
 ),
@@ -1592,7 +1592,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -1602,7 +1602,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 	],
 ),
@@ -1612,7 +1612,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Float],
+			datatype: Some([Float]),
 		),
 	],
 ),
@@ -1622,13 +1622,13 @@ Method (
 	output: [
 		Output (
 			attr: "macro",
-			datatype: [List, Macro],
-			contains: [Macro],
+			datatype: Some([List, Macro]),
+			contains: Some([Macro]),
 		),
 		Output (
 			attr: "reference",
-			datatype: [List, Ship],
-			contains: [Ship],
+			datatype: Some([List, Ship]),
+			contains: Some([Ship]),
 		),
 	],
 ),
@@ -1638,13 +1638,13 @@ Method (
 	output: [
 		Output (
 			attr: "macro",
-			datatype: [List, Macro],
-			contains: [Macro],
+			datatype: Some([List, Macro]),
+			contains: Some([Macro]),
 		),
 		Output (
 			attr: "reference",
-			datatype: [List, Module],
-			contains: [Module],
+			datatype: Some([List, Module]),
+			contains: Some([Module]),
 		),
 	],
 ),
@@ -1654,7 +1654,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Macro],
+			datatype: Some([Macro]),
 		),
 	],
 ),
@@ -1664,13 +1664,13 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List, Constructionsequence],
-			contains: [Constructionsequence],
+			datatype: Some([List, Constructionsequence]),
+			contains: Some([Constructionsequence]),
 		),
 		Output (
 			attr: "rawname",
-			datatype: [List, Constructionentryid],
-			contains: [Constructionentryid],
+			datatype: Some([List, Constructionplanentryid]),
+			contains: Some([Constructionplanentryid]),
 		),
 	],
 ),
@@ -1680,8 +1680,8 @@ Method (
 	output: [
 		Output (
 			attr: "macro",
-			datatype: [List, Macro],
-			contains: [Macro],
+			datatype: Some([List, Macro]),
+			contains: Some([Macro]),
 		),
 	],
 ),
@@ -1691,18 +1691,18 @@ Method (
 	output: [
 		Output (
 			attr: "macro",
-			datatype: [List, Macro],
-			contains: [Macro],
+			datatype: Some([List, Macro]),
+			contains: Some([Macro]),
 		),
 		Output (
 			attr: "doors",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 		Output (
 			attr: "reference",
-			datatype: [List, Module],
-			contains: [Module],
+			datatype: Some([List, Module]),
+			contains: Some([Module]),
 		),
 	],
 ),
@@ -1712,8 +1712,8 @@ Method (
 	output: [
 		Output (
 			attr: "",
-			datatype: [],
-			contains: [],
+			datatype: Some([]),
+			contains: Some([]),
 		),
 	],
 ),
@@ -1723,8 +1723,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Position],
+			datatype: Some([List]),
+			contains: Some([Position]),
 		),
 	],
 ),
@@ -1734,18 +1734,18 @@ Method (
 	output: [
 		Output (
 			attr: "posname",
-			datatype: [List],
-			contains: [Position],
+			datatype: Some([List]),
+			contains: Some([Position]),
 		),
 		Output (
 			attr: "rotname",
-			datatype: [List],
-			contains: [Rotation],
+			datatype: Some([List]),
+			contains: Some([Rotation]),
 		),
 		Output (
 			attr: "radiusname",
-			datatype: [List],
-			contains: [Length],
+			datatype: Some([List]),
+			contains: Some([Length]),
 		),
 	],
 ),
@@ -1755,8 +1755,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 	],
 ),
@@ -1766,15 +1766,15 @@ Method (
 	output: [
 		Output (
 			attr: "position",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 		Output (
 			attr: "rotation",
-			datatype: [Rotation],
+			datatype: Some([Rotation]),
 		),
 		Output (
 			attr: "quadrant",
-			datatype: [Quadrant],
+			datatype: Some([Quadrant]),
 		),
 	],
 ),
@@ -1784,8 +1784,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Ware],
+			datatype: Some([List]),
+			contains: Some([Ware]),
 		),
 	],
 ),
@@ -1795,7 +1795,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Integer],
+			datatype: Some([Integer]),
 		),
 	],
 ),
@@ -1805,8 +1805,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Ware],
+			datatype: Some([List]),
+			contains: Some([Ware]),
 		),
 	],
 ),
@@ -1816,8 +1816,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Ware],
+			datatype: Some([List]),
+			contains: Some([Ware]),
 		),
 	],
 ),
@@ -1827,8 +1827,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Ware],
+			datatype: Some([List]),
+			contains: Some([Ware]),
 		),
 	],
 ),
@@ -1838,11 +1838,11 @@ Method (
 	output: [
 		Output (
 			attr: "position",
-			datatype: [Position],
+			datatype: Some([Position]),
 		),
 		Output (
 			attr: "rotation",
-			datatype: [Rotation],
+			datatype: Some([Rotation]),
 		),
 	],
 ),
@@ -1852,7 +1852,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Zone],
+			datatype: Some([Zone]),
 		),
 	],
 ),
@@ -1862,7 +1862,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -1872,7 +1872,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -1882,13 +1882,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1898,13 +1898,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1914,13 +1914,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1930,13 +1930,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1946,13 +1946,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1962,13 +1962,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1978,13 +1978,13 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Object],
-			contains: [Object],
+			datatype: Some([List, Object]),
+			contains: Some([Object]),
 		),
 		Output (
 			attr: "groupname",
-			datatype: [Group],
-			contains: [Object],
+			datatype: Some([Group]),
+			contains: Some([Object]),
 		),
 	],
 ),
@@ -1994,7 +1994,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Object],
+			datatype: Some([Object]),
 		),
 	],
 ),
@@ -2005,7 +2005,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [String],
+			datatype: Some([String]),
 		),
 	],
 ),
@@ -2016,7 +2016,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [String],
+			datatype: Some([String]),
 		),
 	],
 ),
@@ -2026,8 +2026,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List],
-			contains: [Collectable],
+			datatype: Some([List]),
+			contains: Some([Collectable]),
 		),
 	],
 ),
@@ -2037,7 +2037,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [String],
+			datatype: Some([String]),
 		),
 	],
 ),
@@ -2047,7 +2047,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2057,7 +2057,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2067,7 +2067,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2077,11 +2077,11 @@ Method (
 	output: [
 		Output (
 			attr: "queuedresult",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 		Output (
 			attr: "grantedresult",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2091,11 +2091,11 @@ Method (
 	output: [
 		Output (
 			attr: "queuedresult",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 		Output (
 			attr: "grantedresult",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2105,11 +2105,11 @@ Method (
 	output: [
 		Output (
 			attr: "queuedresult",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 		Output (
 			attr: "grantedresult",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2119,7 +2119,7 @@ Method (
 	output: [
 		Output (
 			attr: "quota",
-			datatype: [String],
+			datatype: Some([String]),
 		),
 	],
 ),
@@ -2129,13 +2129,13 @@ Method (
 	output: [
 		Output (
 			attr: "macros",
-			datatype: [List],
-			contains: [Macro],
+			datatype: Some([List]),
+			contains: Some([Macro]),
 		),
 		Output (
 			attr: "amounts",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 	],
 ),
@@ -2145,8 +2145,8 @@ Method (
 	output: [
 		Output (
 			attr: "amounts",
-			datatype: [List],
-			contains: [Integer],
+			datatype: Some([List]),
+			contains: Some([Integer]),
 		),
 	],
 ),
@@ -2156,7 +2156,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Ship],
+			datatype: Some([Ship]),
 		),
 	],
 ),
@@ -2166,7 +2166,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2176,7 +2176,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [operation],
+			datatype: Some([Operation]),
 		),
 	],
 ),
@@ -2186,8 +2186,8 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Entity],
+			datatype: Some([List]),
+			contains: Some([Entity]),
 		),
 	],
 ),
@@ -2197,7 +2197,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Money],
+			datatype: Some([Money]),
 		),
 	],
 ),
@@ -2213,7 +2213,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2223,13 +2223,13 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [List],
-			contains: [Components],
+			datatype: Some([List]),
+			contains: Some([Component]),
 		),
 		Output (
 			attr: "dropresult",
-			datatype: [List],
-			contains: [Drop],
+			datatype: Some([List]),
+			contains: Some([Drop]),
 		),
 	],
 ),
@@ -2239,7 +2239,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [String],
+			datatype: Some([String]),
 		),
 	],
 ),
@@ -2249,7 +2249,7 @@ Method (
 	output: [
 		Output (
 			attr: "text",
-			datatype: [String],
+			datatype: Some([String]),
 		),
 	],
 ),
@@ -2259,7 +2259,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2269,7 +2269,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Money],
+			datatype: Some([Money]),
 		),
 	],
 ),
@@ -2280,7 +2280,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Componentslot],
+			datatype: Some([Componentslot]),
 		),
 	],
 ),
@@ -2290,8 +2290,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List],
-			contains: [Trade],
+			datatype: Some([List]),
+			contains: Some([Trade]),
 		),
 	],
 ),
@@ -2301,8 +2301,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List],
-			contains: [Entity],
+			datatype: Some([List]),
+			contains: Some([Entity]),
 		),
 	],
 ),
@@ -2312,7 +2312,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2322,7 +2322,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Boolean],
+			datatype: Some([Boolean]),
 		),
 	],
 ),
@@ -2333,7 +2333,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Entity],
+			datatype: Some([Entity]),
 		),
 	],
 ),
@@ -2343,7 +2343,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Time],
+			datatype: Some([Time]),
 		),
 	],
 ),
@@ -2354,7 +2354,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Entity],
+			datatype: Some([Entity]),
 		),
 	],
 ),
@@ -2364,7 +2364,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [NPC],
+			datatype: Some([NPC]),
 		),
 	],
 ),
@@ -2374,7 +2374,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Cluster],
+			datatype: Some([Cluster]),
 		),
 	],
 ),
@@ -2384,7 +2384,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [NPC],
+			datatype: Some([NPC]),
 		),
 	],
 ),
@@ -2394,8 +2394,8 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [List, Componentslot],
-			contains: [Componentslot],
+			datatype: Some([List, Componentslot]),
+			contains: Some([Componentslot]),
 		),
 	],
 ),
@@ -2406,7 +2406,7 @@ Method (
 	output: [
 		Output (
 			attr: "result",
-			datatype: [Unknown],
+			datatype: Some([Unknown]),
 		),
 	],
 ),
@@ -2416,7 +2416,7 @@ Method (
 	output: [
 		Output (
 			attr: "name",
-			datatype: [Object],
+			datatype: Some([Object]),
 		),
 	],
 ),
