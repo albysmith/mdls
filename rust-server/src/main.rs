@@ -47,6 +47,9 @@ use data_store::*;
 mod error_handling;
 use error_handling::*;
 
+mod systems;
+use systems::*;
+
 mod tests;
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
@@ -163,14 +166,19 @@ fn main_loop(
     let _params: InitializeParams = serde_json::from_value(params).unwrap();
     info!("starting example main loop");
 
-    let mut ecs2 = generate_world(_params.root_uri.clone());
-    ecs2.maintain();
+    let method_ano = parse_method_ron();
+    let event_ano = parse_event_ron();
+
+    let mut world = generate_world(_params.root_uri.clone());
+    world.insert(method_ano);
+    world.insert(event_ano);
+    world.maintain();
     let mut dispatcher = DispatcherBuilder::new()
-        .with(PrintMe, "printme", &[])
-        .with(PrintNames, "printme2", &[])
+        .with(systems::PrintMe, "printme", &[])
+        .with(systems::PrintNames, "printme2", &[])
         .build();
-    dispatcher.dispatch(&mut ecs2);
-    ecs2.maintain();
+    dispatcher.dispatch(&mut world);
+    world.maintain();
 
     // also bring over our scriptproperties
     let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
@@ -207,7 +215,7 @@ fn main_loop(
                 if let Ok((id, params)) = request.cast::<GotoDefinition>() {
                     // info!("got gotoDefinition request #{}: {:?}", id, params);
                     let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
-                        params, &mut ecs2,
+                        params, &mut world,
                     )));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {

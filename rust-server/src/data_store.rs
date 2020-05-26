@@ -8,7 +8,7 @@ use walkdir::WalkDir;
 trait ComponentType {
     fn create_component<T: Component>(x: T, world: &mut World, entitiy: Entity) {
         world.write_component::<T>().insert(entitiy, x);
-        info!("create_component: happened");
+        // info!("create_component: happened");
     }
 }
 #[derive(Default, Debug, Clone)]
@@ -40,32 +40,7 @@ impl Component for ScriptName {
 }
 impl ComponentType for ScriptName {}
 
-pub struct PrintNames;
-
-impl<'a> System<'a> for PrintNames {
-    // set the storages you want to use either ReadStorage or WriteStorage if you want to update them
-    type SystemData = (
-        Entities<'a>,
-        ReadStorage<'a, NodeName>,
-        ReadStorage<'a, ScriptName>,
-    );
-
-    fn run(&mut self, (entities, node_storage, script_storage): Self::SystemData) {
-        for (node, script) in (&node_storage, &script_storage).join() {
-            info!("Node Name: {:?} Script Name: {:?}", node, script)
-        }
-    }
-}
-pub struct PrintMe;
-impl<'a> System<'a> for PrintMe {
-    type SystemData = (ReadStorage<'a, Span>,);
-
-    fn run(&mut self, (pos): Self::SystemData) {
-        info!("{:?}", pos.0.count())
-    }
-}
 #[derive(Default, Debug, Clone)]
-
 struct Namespace {
     variables: Vec<Variable>,
 }
@@ -218,8 +193,39 @@ fn parse_document(doc: roxmltree::Document, world: &mut World) {
             "library" => {}
             "params" => {}
             "" => {}
-            _ => {}
+            _ => {
+                let node_entity = world.create_entity().build();
+                <NodeName as ComponentType>::create_component(
+                    NodeName(node_name.to_string()),
+                    world,
+                    node_entity,
+                );
+                attr_parse(node, world)
+            }
         }
+    }
+}
+
+pub fn attr_parse(node: roxmltree::Node, world: &mut World) {
+    for attr in node.attributes() {
+        let start_pos = attr.value_range().start;
+        let end_pos = attr.value_range().end;
+        world
+            .create_entity()
+            .with(Span {
+                start: Position {
+                    bytes: start_pos as usize,
+                },
+                end: Position {
+                    bytes: end_pos as usize,
+                },
+            })
+            .with(Variable {
+                text: attr.value().to_string(),
+                references: vec![],
+                originator: None,
+            })
+            .build();
     }
 }
 
