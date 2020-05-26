@@ -68,7 +68,7 @@ pub fn simple_definition(params: GotoDefinitionParams, world: &mut World) -> Vec
                                                 info!("{:?}", span.start);
                                                 let def_start_pos =
                                                     doc.text_pos_at(span.start.bytes);
-                                                    let diff = span.end.bytes - span.start.bytes;
+                                                let diff = span.end.bytes - span.start.bytes;
                                                 let def_range = Range {
                                                     start: Position::new(
                                                         def_start_pos.row as u64 - 1,
@@ -76,9 +76,7 @@ pub fn simple_definition(params: GotoDefinitionParams, world: &mut World) -> Vec
                                                     ),
                                                     end: Position::new(
                                                         def_start_pos.row as u64 - 1,
-                                                        (def_start_pos.col
-                                                            + diff as u32)
-                                                            as u64
+                                                        (def_start_pos.col + diff as u32) as u64
                                                             - 1,
                                                     ),
                                                 };
