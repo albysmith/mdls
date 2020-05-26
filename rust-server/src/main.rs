@@ -171,7 +171,7 @@ fn main_loop(
 
     // this one uses world_trigger
     let mut ecs2 = parse_workspace(_params.root_uri.clone());
-    // this is the simpler non-parallel version of calling a system to run  
+    // this is the simpler non-parallel version of calling a system to run
     // see data_store for the PrintMe function if you want to use the dispatcher
     let mut hello_world = PrintNames;
     hello_world.run_now(&ecs2);
