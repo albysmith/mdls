@@ -44,9 +44,6 @@ use scriptproperties::*;
 mod data_store;
 use data_store::*;
 
-mod world_trigger;
-use world_trigger::*;
-
 mod error_handling;
 use error_handling::*;
 
@@ -166,15 +163,13 @@ fn main_loop(
     let _params: InitializeParams = serde_json::from_value(params).unwrap();
     info!("starting example main loop");
 
-    // make our entity component system here
-    let mut ecs = parse_file(_params.root_uri.clone());
-
-    // this one uses world_trigger
-    let mut ecs2 = parse_workspace(_params.root_uri.clone());
-    // this is the simpler non-parallel version of calling a system to run
-    // see data_store for the PrintMe function if you want to use the dispatcher
-    let mut hello_world = PrintNames;
-    hello_world.run_now(&ecs2);
+    let mut ecs2 = generate_world(_params.root_uri.clone());
+    ecs2.maintain();
+    let mut dispatcher = DispatcherBuilder::new()
+        .with(PrintMe, "printme", &[])
+        .with(PrintNames, "printme2", &[])
+        .build();
+    dispatcher.dispatch(&mut ecs2);
     ecs2.maintain();
 
     // also bring over our scriptproperties
@@ -212,7 +207,7 @@ fn main_loop(
                 if let Ok((id, params)) = request.cast::<GotoDefinition>() {
                     // info!("got gotoDefinition request #{}: {:?}", id, params);
                     let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
-                        params, &mut ecs,
+                        params, &mut ecs2,
                     )));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
