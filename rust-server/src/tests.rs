@@ -35,6 +35,8 @@ mod tests {
         let test = include_str!("reference/test_ref/md_namespace_basic.xml");
         let namespace = parse_namespace((696, test.to_owned()));
         println!("{:#?}", namespace);
-        assert!(namespace.is_some())
+        assert!(namespace.is_some());
+        assert!(namespace.unwrap().len() == 3)
     }
+    fn definition_parsing() {}
 }

@@ -1,6 +1,6 @@
+use serde::Deserialize;
 use std::fs;
 use std::iter;
-use serde::Deserialize;
 
 #[derive(Debug, Clone)]
 pub struct ScriptProperties {

@@ -86,12 +86,16 @@ pub fn parse_file(workspace_uri: Option<Url>) -> World {
     }
     // info!("{:?}", md_files);
 
+    //NEW WAY OF CREATING ECS
+    // let world = world_trigger(md_files);
+    //END NEW WAY OF CREATING ECS
+
+    //OLD WAY OF CREATING ECS
     let mut world = World::new();
     world.register::<Span>();
     world.register::<Variable>();
     world.register::<File>();
     world.register::<Namespace>();
-    // world.register::<RoxNode>();
 
     for file in md_files {
         if let Ok(file_uri) = Url::from_file_path(&file) {
@@ -124,7 +128,6 @@ pub fn parse_file(workspace_uri: Option<Url>) -> World {
                                         path: file.clone(),
                                     })
                                     .build();
-                                // info!("Tried to make Entity for {}", attr.value())
                             }
                         }
                     }
@@ -136,7 +139,8 @@ pub fn parse_file(workspace_uri: Option<Url>) -> World {
         .with(PrintMe, "printme", &[])
         .build();
     dispatcher.dispatch(&mut world);
-    // let print = PrintMe::run(&mut PrintMe, Span )
+    // END OLD WAY OF ECS
+
     world
 }
 
@@ -157,22 +161,22 @@ fn is_hidden(entry: &walkdir::DirEntry) -> bool {
         .unwrap_or(false)
 }
 
-pub struct GoToDef;
-impl<'a> System<'a> for GoToDef {
-    type SystemData = (
-        ReadStorage<'a, Span>,
-        ReadStorage<'a, File>,
-        ReadStorage<'a, Variable>,
-    );
+// pub struct GoToDef;
+// impl<'a> System<'a> for GoToDef {
+//     type SystemData = (
+//         ReadStorage<'a, Span>,
+//         ReadStorage<'a, File>,
+//         ReadStorage<'a, Variable>,
+//     );
 
-    fn run(&mut self, (span_storage, uri_storage, variable_storage): Self::SystemData) {
-        for (span, uri, variable) in (&span_storage, &uri_storage, &variable_storage).join() {}
-    }
-}
+//     fn run(&mut self, (span_storage, uri_storage, variable_storage): Self::SystemData) {
+//         for (span, uri, variable) in (&span_storage, &uri_storage, &variable_storage).join() {}
+//     }
+// }
 
-#[derive(SystemData)]
-pub struct ECSSystemData<'a> {
-    span: ReadStorage<'a, Span>,
-    uri: ReadStorage<'a, File>,
-    variable: ReadStorage<'a, Variable>,
-}
+// #[derive(SystemData)]
+// pub struct ECSSystemData<'a> {
+//     span: ReadStorage<'a, Span>,
+//     uri: ReadStorage<'a, File>,
+//     variable: ReadStorage<'a, Variable>,
+// }

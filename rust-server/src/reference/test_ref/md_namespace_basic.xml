@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<mdscript name="Mdscirpt_Namespace_Test_Basic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="D:\x4_extract_3.2b\libraries\md.xsd">
+<mdscript name="Mdscript_Namespace_Test_Basic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="D:\x4_extract_3.2b\libraries\md.xsd">
 	<cues>
 		<cue name="Init">
 			<conditions>
@@ -13,6 +13,16 @@
 					<actions>
 						<set_value name="$Sibling_01_space" exact="'sibling_01_space'" />
 					</actions>
+					<cues>
+						<cue name="GChild_01">
+							<conditions>
+								<event_cue_signalled />
+							</conditions>
+							<actions>
+								<set_value name="$GChild_01_space" exact="'gchild_01_space'" />
+							</actions>
+						</cue>
+					</cues>
 				</cue>
 				<cue name="Sibling_02">
 					<conditions>
@@ -24,5 +34,39 @@
 				</cue>
 			</cues>
 		</cue>
+		<cue name="InitSecond">
+			<conditions>
+				<event_game_started />
+			</conditions>
+			<actions>
+				<set_value name="$SecondInitSpace" exact="'initspace'" />
+			</actions>
+			<cues>
+				<cue name="Sibling_01Second">
+					<actions>
+						<set_value name="$SecondSibling_01_space" exact="'sibling_01_space'" />
+					</actions>
+					<cues>
+						<cue name="GChild_01Second">
+							<conditions>
+								<event_cue_signalled />
+							</conditions>
+							<actions>
+								<set_value name="$SecondGChild_01_space" exact="'gchild_01_space'" />
+							</actions>
+						</cue>
+					</cues>
+				</cue>
+				<cue name="Sibling_02Second">
+					<conditions>
+						<event_cue_signalled />
+					</conditions>
+					<actions>
+						<set_value name="$SecondSibling_02_space" exact="'sibling_02_space'" />
+					</actions>
+				</cue>
+			</cues>
+		</cue>
+
 	</cues>
 </mdscript>

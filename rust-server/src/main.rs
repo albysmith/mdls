@@ -1,3 +1,4 @@
+use specs::prelude::*;
 use std::error::Error;
 
 use log::info;
@@ -14,6 +15,10 @@ use lsp_types::*;
 // };
 
 use lsp_server::{Connection, Message, Request, RequestId, Response};
+
+#[macro_use]
+mod macros;
+use macros::*;
 
 mod completion_parser;
 use completion_parser::*;
@@ -39,8 +44,13 @@ use scriptproperties::*;
 mod data_store;
 use data_store::*;
 
-mod tests;
+mod world_trigger;
+use world_trigger::*;
 
+mod error_handling;
+use error_handling::*;
+
+mod tests;
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
@@ -158,6 +168,15 @@ fn main_loop(
 
     // make our entity component system here
     let mut ecs = parse_file(_params.root_uri.clone());
+
+    // this one uses world_trigger
+    let mut ecs2 = parse_workspace(_params.root_uri.clone());
+    // this is the simpler non-parallel version of calling a system to run
+    // see data_store for the PrintMe function if you want to use the dispatcher
+    let mut hello_world = PrintNames;
+    hello_world.run_now(&ecs2);
+    ecs2.maintain();
+
     // also bring over our scriptproperties
     let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
 
