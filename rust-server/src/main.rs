@@ -16,10 +16,6 @@ use lsp_types::*;
 
 use lsp_server::{Connection, Message, Request, RequestId, Response};
 
-#[macro_use]
-mod macros;
-use macros::*;
-
 mod completion_parser;
 use completion_parser::*;
 
@@ -43,9 +39,6 @@ use scriptproperties::*;
 
 mod data_store;
 use data_store::*;
-
-mod error_handling;
-use error_handling::*;
 
 mod systems;
 use systems::*;
@@ -176,10 +169,13 @@ fn main_loop(
     let mut dispatcher = DispatcherBuilder::new()
         .with(systems::PrintMe, "printme", &[])
         .with(systems::PrintNames, "printme2", &[])
+        .with(systems::TypeAdder, "addtype", &[])
+        .with(systems::TypeAdder, "MdTypesPrint", &["addtype"])
         .build();
-    dispatcher.dispatch(&mut world);
     world.maintain();
 
+    dispatcher.dispatch(&mut world);
+    // dispatcher.dispatch(&mut world);
     // also bring over our scriptproperties
     let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
 

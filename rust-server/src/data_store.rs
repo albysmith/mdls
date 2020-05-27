@@ -1,3 +1,4 @@
+use crate::*;
 use log::info;
 use lsp_types::Url;
 use specs::prelude::*;
@@ -13,28 +14,36 @@ trait ComponentType {
 }
 #[derive(Default, Debug, Clone)]
 
-pub struct NodeName(String);
+pub struct MdTypes {
+    pub possible_types: Event,
+}
+impl Component for MdTypes {
+    type Storage = VecStorage<Self>;
+}
+#[derive(Default,PartialEq, Debug, Clone)]
+
+pub struct NodeName(pub String);
 impl Component for NodeName {
     type Storage = VecStorage<Self>;
 }
 impl ComponentType for NodeName {}
-#[derive(Default, Debug, Clone)]
+#[derive(Default,PartialEq, Debug, Clone)]
 
-pub struct VariableName(String);
+pub struct VariableName(pub String);
 impl Component for VariableName {
     type Storage = VecStorage<Self>;
 }
 impl ComponentType for VariableName {}
-#[derive(Default, Debug, Clone)]
+#[derive(Default,PartialEq, Debug, Clone)]
 
-pub struct CueName(String);
+pub struct CueName(pub String);
 impl Component for CueName {
     type Storage = VecStorage<Self>;
 }
 impl ComponentType for CueName {}
-#[derive(Default, Debug, Clone)]
+#[derive(Default,PartialEq, Debug, Clone)]
 
-pub struct ScriptName(String);
+pub struct ScriptName(pub String);
 impl Component for ScriptName {
     type Storage = VecStorage<Self>;
 }
@@ -114,6 +123,7 @@ fn create_world() -> World {
     world.register::<VariableName>();
     world.register::<CueName>();
     world.register::<ScriptName>();
+    world.register::<MdTypes>();
     world
 }
 

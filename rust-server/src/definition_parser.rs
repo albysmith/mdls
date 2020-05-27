@@ -114,17 +114,10 @@ fn get_node_and_string(params: &GotoDefinitionParams) -> Option<(usize, String, 
                 .nth(params.text_document_position_params.position.line as usize)
             {
                 if let Some(byte_position) = string.find(line) {
-                    Some((byte_position, string, path))
-                } else {
-                    None
+                    return Some((byte_position, string, path))
                 }
-            } else {
-                None
             }
-        } else {
-            None
         }
-    } else {
-        None
     }
+    None
 }
