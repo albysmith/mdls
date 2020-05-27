@@ -23,7 +23,7 @@ mod definition_parser;
 use definition_parser::*;
 
 mod type_checker;
-use type_checker::*;
+// use type_checker::*;
 
 mod type_annotations;
 use type_annotations::*;
@@ -32,7 +32,7 @@ mod hover;
 use hover::*;
 
 mod expression_parser;
-use expression_parser::*;
+// use expression_parser::*;
 
 mod scriptproperties;
 use scriptproperties::*;
@@ -41,10 +41,9 @@ mod data_store;
 use data_store::*;
 
 mod systems;
-use systems::*;
+// use systems::*;
 
 mod tests;
-
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
     // our logging only write out to stderr.
@@ -169,11 +168,10 @@ fn main_loop(
     let mut dispatcher = DispatcherBuilder::new()
         .with(systems::PrintMe, "printme", &[])
         .with(systems::PrintNames, "printme2", &[])
-        .with(systems::TypeAdder, "addtype", &[])
-        // .with(systems::TypeAdder, "MdTypesPrint", &[])
-        .with(systems::MdEventsPrint, "MdEventsPrint", &["addtype"])
-        .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addtype"])
-
+        .with(systems::EventAdder, "addevents", &[])
+        .with(systems::MethodAdder, "addmethods", &[])
+        .with(systems::MdEventsPrint, "MdEventsPrint", &["addevents"])
+        .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addmethods"])
         .build();
 
     dispatcher.dispatch(&mut world);
@@ -262,10 +260,10 @@ fn main_loop(
                 // }
                 // ...
             }
-            Message::Response(resp) => {
+            Message::Response(_resp) => {
                 // info!("got response: {:?}", resp);
             }
-            Message::Notification(not) => {
+            Message::Notification(_not) => {
                 // info!("got notification: {:?}", not);
             }
         }

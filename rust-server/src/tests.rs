@@ -3,15 +3,15 @@ mod tests {
     use crate::*;
     #[test]
     fn ron_methods() {
-        let ron = parse_method_ron();
+        let _ron = parse_method_ron();
     }
     #[test]
     fn ron_events() {
-        let ron = parse_event_ron();
+        let _ron = parse_event_ron();
     }
     #[test]
     fn scriptproperties() {
-        let scripts = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
+        let _scripts = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
     }
     #[test]
     //test cant fail x.x
@@ -24,5 +24,4 @@ mod tests {
         assert!(namespace.is_some());
         assert!(namespace.unwrap().len() == 3)
     }
-    fn definition_parsing() {}
 }

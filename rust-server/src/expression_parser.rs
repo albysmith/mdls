@@ -4,7 +4,7 @@ struct NodeVars<'b> {
     vars: Vec<&'b str>,
 }
 
-fn find_vars<'a>(doc: &'a roxmltree::Document) -> Option<NodeVars<'a>> {
+fn _find_vars<'a>(doc: &'a roxmltree::Document) -> Option<NodeVars<'a>> {
     let expressions = doc
         .descendants()
         .map(|n| (n.attribute("exact"), n.tag_name().name()))

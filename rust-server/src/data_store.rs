@@ -1,14 +1,13 @@
 use crate::*;
 use log::info;
 use lsp_types::Url;
-use specs::prelude::*;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use walkdir::WalkDir;
 
 trait ComponentType {
     fn create_component<T: Component>(x: T, world: &mut World, entitiy: Entity) {
-        world.write_component::<T>().insert(entitiy, x);
+        let _x  = world.write_component::<T>().insert(entitiy, x);
         // info!("create_component: happened");
     }
 }

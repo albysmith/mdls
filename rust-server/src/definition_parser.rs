@@ -1,6 +1,6 @@
 use crate::data_store::*;
 use log::info;
-use lsp_types::{GotoDefinitionParams, Location, Position, Range, Url};
+use lsp_types::{GotoDefinitionParams, Location, Position, Range};
 use specs::prelude::*;
 use std::fs;
 use std::path::PathBuf;
