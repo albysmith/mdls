@@ -14,10 +14,18 @@ trait ComponentType {
 }
 #[derive(Default, Debug, Clone)]
 
-pub struct MdTypes {
+pub struct MdMethods {
+    pub possible_types: Method,
+}
+impl Component for MdMethods {
+    type Storage = VecStorage<Self>;
+}
+#[derive(Default, Debug, Clone)]
+
+pub struct MdEvents {
     pub possible_types: Event,
 }
-impl Component for MdTypes {
+impl Component for MdEvents {
     type Storage = VecStorage<Self>;
 }
 #[derive(Default,PartialEq, Debug, Clone)]
@@ -123,7 +131,8 @@ fn create_world() -> World {
     world.register::<VariableName>();
     world.register::<CueName>();
     world.register::<ScriptName>();
-    world.register::<MdTypes>();
+    world.register::<MdEvents>();
+    world.register::<MdMethods>();
     world
 }
 

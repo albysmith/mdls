@@ -170,11 +170,14 @@ fn main_loop(
         .with(systems::PrintMe, "printme", &[])
         .with(systems::PrintNames, "printme2", &[])
         .with(systems::TypeAdder, "addtype", &[])
-        .with(systems::TypeAdder, "MdTypesPrint", &["addtype"])
+        // .with(systems::TypeAdder, "MdTypesPrint", &[])
+        .with(systems::MdEventsPrint, "MdEventsPrint", &["addtype"])
+        .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addtype"])
+
         .build();
-    world.maintain();
 
     dispatcher.dispatch(&mut world);
+
     // dispatcher.dispatch(&mut world);
     // also bring over our scriptproperties
     let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
