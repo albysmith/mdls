@@ -1,7 +1,6 @@
 use crate::scriptproperties::Datatypes;
-use ron::from_str;
 use serde::Deserialize;
-#[derive(Debug, Deserialize)]
+#[derive(Debug,Default,Clone,  Deserialize)]
 pub struct Event {
     pub id: String,
     pub description: String,
@@ -11,21 +10,28 @@ pub struct Event {
     pub param2: Option<Vec<Datatypes>>,
     pub param3: Option<Vec<Datatypes>>,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug,Default,Clone,  Deserialize)]
 pub struct EventList {
     pub events: Vec<Event>,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug,Default,Clone,  Deserialize)]
 pub struct Method {
     pub id: String,
     pub description: String,
     pub output: Vec<Output>,
 }
-#[derive(Debug, Deserialize)]
+
+// impl Method {
+//     pub fn match_node_type() -> Vec<Datatypes>{
+
+//     }
+// }
+
+#[derive(Debug,Default,Clone,  Deserialize)]
 pub struct MethodList {
-    methods: Vec<Method>,
+    pub methods: Vec<Method>,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug,Default,Clone,  Deserialize)]
 pub struct Output {
     pub attr: String,
     pub datatype: Option<Vec<Datatypes>>,

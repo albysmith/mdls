@@ -33,9 +33,9 @@ pub fn parse_namespace(input: (usize, String)) -> Option<Vec<CompletionItem>> {
                             node.tag_name().name()
                         );
                         for ancestor in node.ancestors() {
-                            info!("ancestor {}", ancestor.tag_name().name());
+                            // info!("ancestor {}", ancestor.tag_name().name());
                             for f_child in ancestor.children() {
-                                info!("f_child {}", f_child.tag_name().name());
+                                // info!("f_child {}", f_child.tag_name().name());
                                 match f_child.tag_name().name() {
                                     "actions" => {
                                         for actions_child in f_child.children() {
@@ -133,17 +133,11 @@ fn get_node_and_string(params: CompletionParams) -> Option<(usize, String)> {
                 .nth(params.text_document_position.position.line as usize)
             {
                 if let Some(byte_position) = string.find(line) {
-                    Some((byte_position, string))
-                } else {
-                    None
+                    return Some((byte_position, string))
                 }
-            } else {
-                None
             }
-        } else {
-            None
         }
-    } else {
-        None
     }
+
+    None
 }

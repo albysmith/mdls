@@ -1,10 +1,62 @@
+use crate::*;
 use log::info;
 use lsp_types::Url;
-use specs::prelude::*;
-use std::fs::*;
-use std::path::{Path, PathBuf};
+use std::fs;
+use std::path::PathBuf;
 use walkdir::WalkDir;
 
+trait ComponentType {
+    fn create_component<T: Component>(x: T, world: &mut World, entitiy: Entity) {
+        let _x  = world.write_component::<T>().insert(entitiy, x);
+        // info!("create_component: happened");
+    }
+}
+#[derive(Default, Debug, Clone)]
+
+pub struct MdMethods {
+    pub possible_types: Method,
+}
+impl Component for MdMethods {
+    type Storage = VecStorage<Self>;
+}
+#[derive(Default, Debug, Clone)]
+
+pub struct MdEvents {
+    pub possible_types: Event,
+}
+impl Component for MdEvents {
+    type Storage = VecStorage<Self>;
+}
+#[derive(Default,PartialEq, Debug, Clone)]
+
+pub struct NodeName(pub String);
+impl Component for NodeName {
+    type Storage = VecStorage<Self>;
+}
+impl ComponentType for NodeName {}
+#[derive(Default,PartialEq, Debug, Clone)]
+
+pub struct VariableName(pub String);
+impl Component for VariableName {
+    type Storage = VecStorage<Self>;
+}
+impl ComponentType for VariableName {}
+#[derive(Default,PartialEq, Debug, Clone)]
+
+pub struct CueName(pub String);
+impl Component for CueName {
+    type Storage = VecStorage<Self>;
+}
+impl ComponentType for CueName {}
+#[derive(Default,PartialEq, Debug, Clone)]
+
+pub struct ScriptName(pub String);
+impl Component for ScriptName {
+    type Storage = VecStorage<Self>;
+}
+impl ComponentType for ScriptName {}
+
+#[derive(Default, Debug, Clone)]
 struct Namespace {
     variables: Vec<Variable>,
 }
@@ -12,6 +64,8 @@ struct Namespace {
 impl Component for Namespace {
     type Storage = VecStorage<Self>;
 }
+#[derive(Debug, Clone)]
+
 pub struct File {
     pub uri: Url,
     pub path: PathBuf,
@@ -20,7 +74,7 @@ pub struct File {
 impl Component for File {
     type Storage = VecStorage<Self>;
 }
-
+#[derive(Default, Debug, Clone)]
 pub struct Variable {
     pub text: String,
     pub references: Vec<u32>,
@@ -37,7 +91,7 @@ pub struct Position {
     // character: usize,
     pub bytes: usize,
 }
-
+#[derive(Default, Debug, Clone, Copy)]
 pub struct Span {
     pub start: Position,
     pub end: Position,
@@ -47,59 +101,158 @@ impl Component for Span {
     type Storage = VecStorage<Self>;
 }
 
-// struct RoxNode<'a, 'input> {
-// 	node: roxmltree::Node<'a, 'input>
-// }
+pub fn generate_world(workspace_uri: Option<Url>) -> World {
+    let files = get_xml(workspace_uri);
 
-// impl Component for RoxNode {
-//     type Storage = VecStorage<Self>;
-// }
+    let mut world = create_world();
+    go_to_def_temp(&files, &mut world);
 
-// Entity is an instance of a variable somewhere in code
-// Variable component tracks all instances of itself and tries to figure out its origin point
-// Namespace tracks all the variables present in that namespace
-
-pub fn parse_file(workspace_uri: Option<Url>) -> World {
-    // this is probably the most disappointing code i've ever written.....
-    let mut md_files: Vec<PathBuf> = vec![];
-    if let Some(uri) = workspace_uri {
-        if let Ok(path) = uri.to_file_path() {
-            for entry in WalkDir::new(path) {
-                if let Ok(f) = entry {
-                    if !is_hidden(&f) {
-                        if f.file_name() == "md" {
-                            for md_file in WalkDir::new(f.path()) {
-                                if let Ok(m) = md_file {
-                                    if let Some(name) = m.file_name().to_str() {
-                                        if name.contains(".xml") {
-                                            md_files.push(m.into_path())
-                                        }
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                    }
+    if let Some(files) = files {
+        for file in files.iter() {
+            if let Ok(string) = fs::read_to_string(&file.path) {
+                if let Ok(doc) = roxmltree::Document::parse(&string) {
+                    info!("generate_world: {}", string.len());
+                    parse_document(doc, &mut world)
                 }
             }
         }
     }
-    // info!("{:?}", md_files);
+    world
+}
 
-    //NEW WAY OF CREATING ECS
-    // let world = world_trigger(md_files);
-    //END NEW WAY OF CREATING ECS
-
-    //OLD WAY OF CREATING ECS
+fn create_world() -> World {
     let mut world = World::new();
     world.register::<Span>();
     world.register::<Variable>();
     world.register::<File>();
     world.register::<Namespace>();
+    world.register::<NodeName>();
+    world.register::<VariableName>();
+    world.register::<CueName>();
+    world.register::<ScriptName>();
+    world.register::<MdEvents>();
+    world.register::<MdMethods>();
+    world
+}
 
-    for file in md_files {
-        if let Ok(file_uri) = Url::from_file_path(&file) {
-            if let Ok(string) = std::fs::read_to_string(&file) {
+pub fn get_xml(workspace_uri: Option<Url>) -> Option<Vec<File>> {
+    if let Some(url) = workspace_uri {
+        if let Ok(path) = url.to_file_path() {
+            let xml = WalkDir::new(path)
+                .into_iter()
+                .filter_map(|pr| pr.ok())
+                .filter(|p| {
+                    p.path()
+                        .extension()
+                        .filter(|e| e.to_str() == Some("xml"))
+                        .is_some()
+                })
+                .map(|d| d.into_path())
+                .filter(|p| {
+                    for comp in p.as_path().components() {
+                        if let Some(word) = comp.as_os_str().to_str() {
+                            match word {
+                                "cutscenes" => return false,
+                                "assets" => return false,
+                                "index" => return false,
+                                "libraries" => return false,
+                                "maps" => return false,
+                                "music" => return false,
+                                "particles" => return false,
+                                "sfx" => return false,
+                                "shadergl" => return false,
+                                "t" => return false,
+                                "textures" => return false,
+                                "ui" => return false,
+                                "voice-l044" => return false,
+                                "voice-l049" => return false,
+                                "vulkan" => return false,
+                                _ => (),
+                            }
+                        }
+                    }
+                    true
+                })
+                .map(|p| File {
+                    uri: url.clone(),
+                    path: p,
+                })
+                .collect::<Vec<File>>();
+
+            return Some(xml);
+        }
+    }
+    None
+}
+
+fn parse_document(doc: roxmltree::Document, world: &mut World) {
+    let mdscript_entity = world.create_entity().build();
+    world.maintain();
+    for node in doc.descendants() {
+        let node_name = node.tag_name().name();
+        match node_name {
+            "mdscript" => <ScriptName as ComponentType>::create_component(
+                ScriptName(node_name.to_string()),
+                world,
+                mdscript_entity,
+            ),
+            "cues" => {}
+            "cue" => {
+                let cue_entity = world.create_entity().build();
+                <CueName as ComponentType>::create_component(
+                    CueName(node_name.to_string()),
+                    world,
+                    cue_entity,
+                )
+            }
+            "conditions" => {}
+            "delay" => {}
+            "actions" => {}
+            "library" => {}
+            "params" => {}
+            "" => {}
+            _ => {
+                let node_entity = world.create_entity().build();
+                <NodeName as ComponentType>::create_component(
+                    NodeName(node_name.to_string()),
+                    world,
+                    node_entity,
+                );
+                attr_parse(node, world)
+            }
+        }
+    }
+}
+
+pub fn attr_parse(node: roxmltree::Node, world: &mut World) {
+    for attr in node.attributes() {
+        let start_pos = attr.value_range().start;
+        let end_pos = attr.value_range().end;
+        world
+            .create_entity()
+            .with(Span {
+                start: Position {
+                    bytes: start_pos as usize,
+                },
+                end: Position {
+                    bytes: end_pos as usize,
+                },
+            })
+            .with(Variable {
+                text: attr.value().to_string(),
+                references: vec![],
+                originator: None,
+            })
+            .build();
+    }
+}
+
+pub fn go_to_def_temp(paths: &Option<Vec<File>>, world: &mut World) {
+    if let Some(files) = paths {
+        for file in files.iter() {
+            if let Ok(string) = std::fs::read_to_string(&file.path) {
+                info!("go_to_def_temp: {}", string.len());
+
                 if let Ok(doc) = roxmltree::Document::parse(&string) {
                     for node in doc.descendants() {
                         for attr in node.attributes() {
@@ -124,8 +277,8 @@ pub fn parse_file(workspace_uri: Option<Url>) -> World {
                                         originator: None,
                                     })
                                     .with(File {
-                                        uri: file_uri.clone(),
-                                        path: file.clone(),
+                                        uri: file.uri.clone(),
+                                        path: file.path.clone(),
                                     })
                                     .build();
                             }
@@ -135,48 +288,4 @@ pub fn parse_file(workspace_uri: Option<Url>) -> World {
             }
         }
     }
-    let mut dispatcher = DispatcherBuilder::new()
-        .with(PrintMe, "printme", &[])
-        .build();
-    dispatcher.dispatch(&mut world);
-    // END OLD WAY OF ECS
-
-    world
 }
-
-struct PrintMe;
-impl<'a> System<'a> for PrintMe {
-    type SystemData = (ReadStorage<'a, Span>,);
-
-    fn run(&mut self, (pos): Self::SystemData) {
-        info!("{:?}", pos.0.count())
-    }
-}
-
-fn is_hidden(entry: &walkdir::DirEntry) -> bool {
-    entry
-        .file_name()
-        .to_str()
-        .map(|s| s.starts_with("."))
-        .unwrap_or(false)
-}
-
-// pub struct GoToDef;
-// impl<'a> System<'a> for GoToDef {
-//     type SystemData = (
-//         ReadStorage<'a, Span>,
-//         ReadStorage<'a, File>,
-//         ReadStorage<'a, Variable>,
-//     );
-
-//     fn run(&mut self, (span_storage, uri_storage, variable_storage): Self::SystemData) {
-//         for (span, uri, variable) in (&span_storage, &uri_storage, &variable_storage).join() {}
-//     }
-// }
-
-// #[derive(SystemData)]
-// pub struct ECSSystemData<'a> {
-//     span: ReadStorage<'a, Span>,
-//     uri: ReadStorage<'a, File>,
-//     variable: ReadStorage<'a, Variable>,
-// }

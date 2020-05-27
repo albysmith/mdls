@@ -16,10 +16,6 @@ use lsp_types::*;
 
 use lsp_server::{Connection, Message, Request, RequestId, Response};
 
-#[macro_use]
-mod macros;
-use macros::*;
-
 mod completion_parser;
 use completion_parser::*;
 
@@ -27,7 +23,7 @@ mod definition_parser;
 use definition_parser::*;
 
 mod type_checker;
-use type_checker::*;
+// use type_checker::*;
 
 mod type_annotations;
 use type_annotations::*;
@@ -36,7 +32,7 @@ mod hover;
 use hover::*;
 
 mod expression_parser;
-use expression_parser::*;
+// use expression_parser::*;
 
 mod scriptproperties;
 use scriptproperties::*;
@@ -44,14 +40,10 @@ use scriptproperties::*;
 mod data_store;
 use data_store::*;
 
-mod world_trigger;
-use world_trigger::*;
-
-mod error_handling;
-use error_handling::*;
+mod systems;
+// use systems::*;
 
 mod tests;
-
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
     // our logging only write out to stderr.
@@ -166,17 +158,25 @@ fn main_loop(
     let _params: InitializeParams = serde_json::from_value(params).unwrap();
     info!("starting example main loop");
 
-    // make our entity component system here
-    let mut ecs = parse_file(_params.root_uri.clone());
+    let method_ano = parse_method_ron();
+    let event_ano = parse_event_ron();
 
-    // this one uses world_trigger
-    let mut ecs2 = parse_workspace(_params.root_uri.clone());
-    // this is the simpler non-parallel version of calling a system to run
-    // see data_store for the PrintMe function if you want to use the dispatcher
-    let mut hello_world = PrintNames;
-    hello_world.run_now(&ecs2);
-    ecs2.maintain();
+    let mut world = generate_world(_params.root_uri.clone());
+    world.insert(method_ano);
+    world.insert(event_ano);
+    world.maintain();
+    let mut dispatcher = DispatcherBuilder::new()
+        .with(systems::PrintMe, "printme", &[])
+        .with(systems::PrintNames, "printme2", &[])
+        .with(systems::EventAdder, "addevents", &[])
+        .with(systems::MethodAdder, "addmethods", &[])
+        .with(systems::MdEventsPrint, "MdEventsPrint", &["addevents"])
+        .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addmethods"])
+        .build();
 
+    dispatcher.dispatch(&mut world);
+
+    // dispatcher.dispatch(&mut world);
     // also bring over our scriptproperties
     let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
 
@@ -212,7 +212,7 @@ fn main_loop(
                 if let Ok((id, params)) = request.cast::<GotoDefinition>() {
                     // info!("got gotoDefinition request #{}: {:?}", id, params);
                     let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
-                        params, &mut ecs,
+                        params, &mut world,
                     )));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
@@ -260,10 +260,10 @@ fn main_loop(
                 // }
                 // ...
             }
-            Message::Response(resp) => {
+            Message::Response(_resp) => {
                 // info!("got response: {:?}", resp);
             }
-            Message::Notification(not) => {
+            Message::Notification(_not) => {
                 // info!("got notification: {:?}", not);
             }
         }
