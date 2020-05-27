@@ -6,7 +6,6 @@ impl<'a> System<'a> for PrintNames {
         ReadStorage<'a, NodeName>,
         ReadStorage<'a, MdEvents>,
     );
-
     fn run(&mut self, (entities, node_storage, events): Self::SystemData) {
         for (node, ent, event) in (&node_storage, &entities, &events).join() {
             info!(
@@ -26,7 +25,6 @@ impl<'a> System<'a> for EventAdder {
         WriteStorage<'a, MdEvents>,
         Read<'a, EventList>,
     );
-
     fn run(&mut self, (entity, nodecomp, mut eventcomp, eventlist): Self::SystemData) {
         for node in (&entity, &nodecomp).join() {
             for event in eventlist.events.iter() {
@@ -51,7 +49,6 @@ impl<'a> System<'a> for MethodAdder {
         WriteStorage<'a, MdMethods>,
         Read<'a, MethodList>,
     );
-
     fn run(&mut self, (entity, nodecomp, mut methcomp, methodlist): Self::SystemData) {
         for node in (&entity, &nodecomp).join() {
             for method in methodlist.methods.iter() {
@@ -68,6 +65,34 @@ impl<'a> System<'a> for MethodAdder {
         info!("methods");
     }
 }
+
+// pub struct TypeVar;
+// impl<'a> System<'a> for TypeVar {
+//     type SystemData = (
+//         Entities<'a>,
+//         ReadStorage<'a, NodeName>,
+//         WriteStorage<'a, MdMethods>,
+//         Read<'a, MethodList>,
+//     );
+//     fn run(&mut self, (entity, nodecomp, mut methcomp, methodlist): Self::SystemData) {
+//         for node in (&entity, &nodecomp).join() {
+//             for method in methodlist.methods.iter() {
+//                 if method.id == (node.1).0 {
+//                     let _y = methcomp.insert(
+//                         node.0,
+//                         MdMethods {
+//                             possible_types: method.clone(),
+//                         },
+//                     );
+//                 }
+//             }
+//         }
+//         info!("methods");
+//     }
+// }
+
+
+
 
 pub struct MdEventsPrint;
 impl<'a> System<'a> for MdEventsPrint {

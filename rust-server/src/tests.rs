@@ -16,7 +16,6 @@ mod tests {
     #[test]
     //test cant fail x.x
     // assert what namespace should be
-    // better to rewrite namespace
     fn md_namespace_basic() {
         let test = include_str!("reference/test_ref/md_namespace_basic.xml");
         let namespace = parse_namespace((696, test.to_owned()));
