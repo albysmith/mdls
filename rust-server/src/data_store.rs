@@ -304,32 +304,86 @@ pub fn new_generate_world(workspace_uri: Option<Url>) -> World {
 //     pub variable: Vec<i32>,
 //     pub this_flag: bool,
 // }
-
+// TODO: UNFUCK THE UNWRAPS
 fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
     let mut buffy = components::Buffy::default();
     for node in doc.descendants() {
         let node_name = node.tag_name().name();
         match node_name {
             "mdscript" => {
+                buffy.reset();
                 buffy.script = world
                     .create_entity()
                     .with(components::Script {
                         cues: vec![],
                         path: "TEMPpath".to_string(),
-                        value: node_name.to_string(),
+                        value: node.attribute("name").unwrap().to_owned(),
                     })
                     .build()
                     .id();
             }
             "cues" => {}
-            "cue" => {}
+            "cue" => {
+                if let Some(namespace) = node.attribute("namespace") {
+                    if namespace == "this" {
+                        // TODO FILL BUFFY ENTS AND RESET()
+                        buffy.this_flag = true;
+                    }
+                };
+                buffy.cue.push(
+                    world
+                        .create_entity()
+                        .with(components::Cue {
+                            script: buffy.script,
+                            namespace: buffy.namespace,
+                            nodes: vec![],
+                            value: node.attribute("name").unwrap().to_owned(),
+                            path: components::MdPath::default(),
+                            newspace: false,
+                        })
+                        .build()
+                        .id(),
+                )
+            }
             "conditions" => {}
             "delay" => {}
             "actions" => {}
             "library" => {}
             "params" => {}
             "" => {}
-            _ => {}
+            _ => {
+                buffy.node.push(
+                    world
+                        .create_entity()
+                        .with(components::Node {
+                            script: buffy.script,
+                            cue: buffy.cue.last().unwrap().to_owned(),
+                            namespace: buffy.namespace,
+                            value: node_name.to_owned(),
+                            event: None,
+                            method: None,
+                        })
+                        .build()
+                        .id(),
+                );
+                for attr in node.attributes() {
+                    buffy.variable.push(
+                        world
+                            .create_entity()
+                            .with(components::Variable {
+                                script: buffy.script,
+                                cue: buffy.cue.last().unwrap().to_owned(),
+                                namespace: buffy.namespace,
+                                node: buffy.node.last().unwrap().to_owned(),
+                                value: attr.value().to_owned(),
+                                name: attr.name().to_owned(),
+                                ..Default::default()
+                            })
+                            .build()
+                            .id(),
+                    )
+                }
+            }
         }
     }
 }
