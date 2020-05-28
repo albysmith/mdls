@@ -2,17 +2,17 @@ use crate::*;
 use log::info;
 use lsp_types::Url;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 trait ComponentType {
     fn create_component<T: Component>(x: T, world: &mut World, entitiy: Entity) {
-        let _x  = world.write_component::<T>().insert(entitiy, x);
+        let _x = world.write_component::<T>().insert(entitiy, x);
         // info!("create_component: happened");
     }
 }
-#[derive(Default, Debug, Clone)]
 
+#[derive(Default, Debug, Clone)]
 pub struct MdMethods {
     pub possible_types: Method,
 }
@@ -20,57 +20,48 @@ impl Component for MdMethods {
     type Storage = VecStorage<Self>;
 }
 #[derive(Default, Debug, Clone)]
-
 pub struct MdEvents {
     pub possible_types: Event,
 }
 impl Component for MdEvents {
     type Storage = VecStorage<Self>;
 }
-#[derive(Default,PartialEq, Debug, Clone)]
-
+#[derive(Default, PartialEq, Debug, Clone)]
 pub struct NodeName(pub String);
 impl Component for NodeName {
     type Storage = VecStorage<Self>;
 }
 impl ComponentType for NodeName {}
-#[derive(Default,PartialEq, Debug, Clone)]
-
+#[derive(Default, PartialEq, Debug, Clone)]
 pub struct VariableName(pub String);
 impl Component for VariableName {
     type Storage = VecStorage<Self>;
 }
 impl ComponentType for VariableName {}
-#[derive(Default,PartialEq, Debug, Clone)]
-
+#[derive(Default, PartialEq, Debug, Clone)]
 pub struct CueName(pub String);
 impl Component for CueName {
     type Storage = VecStorage<Self>;
 }
 impl ComponentType for CueName {}
-#[derive(Default,PartialEq, Debug, Clone)]
-
+#[derive(Default, PartialEq, Debug, Clone)]
 pub struct ScriptName(pub String);
 impl Component for ScriptName {
     type Storage = VecStorage<Self>;
 }
 impl ComponentType for ScriptName {}
-
 #[derive(Default, Debug, Clone)]
 struct Namespace {
     variables: Vec<Variable>,
 }
-
 impl Component for Namespace {
     type Storage = VecStorage<Self>;
 }
 #[derive(Debug, Clone)]
-
 pub struct File {
     pub uri: Url,
     pub path: PathBuf,
 }
-
 impl Component for File {
     type Storage = VecStorage<Self>;
 }
@@ -80,11 +71,9 @@ pub struct Variable {
     pub references: Vec<u32>,
     pub originator: Option<Vec<u32>>,
 }
-
 impl Component for Variable {
     type Storage = VecStorage<Self>;
 }
-
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Position {
     // line: usize,
@@ -96,7 +85,6 @@ pub struct Span {
     pub start: Position,
     pub end: Position,
 }
-
 impl Component for Span {
     type Storage = VecStorage<Self>;
 }
@@ -243,6 +231,7 @@ pub fn attr_parse(node: roxmltree::Node, world: &mut World) {
                 references: vec![],
                 originator: None,
             })
+            .with(VariableName(node.tag_name().name().to_owned()))
             .build();
     }
 }
@@ -284,6 +273,115 @@ pub fn go_to_def_temp(paths: &Option<Vec<File>>, world: &mut World) {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+pub fn new_generate_world(workspace_uri: Option<Url>) -> World {
+    let files = get_xml(workspace_uri);
+
+    let mut world = create_world();
+
+    if let Some(files) = files {
+        for file in files.iter() {
+            if let Ok(string) = fs::read_to_string(&file.path) {
+                if let Ok(doc) = roxmltree::Document::parse(&string) {
+                    parse_doc_to_components(doc, &mut world)
+                }
+            }
+        }
+    }
+    world
+}
+// here for reference
+// pub struct Buffy {
+//     pub script: i32,
+//     pub cue: Vec<i32>,
+//     pub node: Vec<i32>,
+//     pub namespace: Vec<i32>,
+//     pub variable: Vec<i32>,
+//     pub this_flag: bool,
+// }
+// TODO: UNFUCK THE UNWRAPS
+fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
+    let mut buffy = components::Buffy::default();
+    for node in doc.descendants() {
+        let node_name = node.tag_name().name();
+        match node_name {
+            "mdscript" => {
+                buffy.reset();
+                buffy.script = world
+                    .create_entity()
+                    .with(components::Script {
+                        cues: vec![],
+                        path: "TEMPpath".to_string(),
+                        value: node.attribute("name").unwrap().to_owned(),
+                    })
+                    .build()
+                    .id();
+            }
+            "cues" => {}
+            "cue" => {
+                if let Some(namespace) = node.attribute("namespace") {
+                    if namespace == "this" {
+                        // TODO FILL BUFFY ENTS AND RESET()
+                        buffy.this_flag = true;
+                    }
+                };
+                buffy.cue.push(
+                    world
+                        .create_entity()
+                        .with(components::Cue {
+                            script: buffy.script,
+                            namespace: buffy.namespace,
+                            nodes: vec![],
+                            value: node.attribute("name").unwrap().to_owned(),
+                            path: components::MdPath::default(),
+                            newspace: false,
+                        })
+                        .build()
+                        .id(),
+                )
+            }
+            "conditions" => {}
+            "delay" => {}
+            "actions" => {}
+            "library" => {}
+            "params" => {}
+            "" => {}
+            _ => {
+                buffy.node.push(
+                    world
+                        .create_entity()
+                        .with(components::Node {
+                            script: buffy.script,
+                            cue: buffy.cue.last().unwrap().to_owned(),
+                            namespace: buffy.namespace,
+                            value: node_name.to_owned(),
+                            event: None,
+                            method: None,
+                        })
+                        .build()
+                        .id(),
+                );
+                for attr in node.attributes() {
+                    buffy.variable.push(
+                        world
+                            .create_entity()
+                            .with(components::Variable {
+                                script: buffy.script,
+                                cue: buffy.cue.last().unwrap().to_owned(),
+                                namespace: buffy.namespace,
+                                node: buffy.node.last().unwrap().to_owned(),
+                                value: attr.value().to_owned(),
+                                name: attr.name().to_owned(),
+                                ..Default::default()
+                            })
+                            .build()
+                            .id(),
+                    )
                 }
             }
         }
