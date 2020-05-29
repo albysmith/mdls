@@ -173,8 +173,8 @@ fn main_loop(
         .with(systems::PrintNames, "printme2", &[])
         .with(systems::EventAdder, "addevents", &[])
         .with(systems::MethodAdder, "addmethods", &[])
-        .with(systems::MdEventsPrint, "MdEventsPrint", &["addevents"])
-        .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addmethods"])
+        // .with(systems::MdEventsPrint, "MdEventsPrint", &["addevents"])
+        // .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addmethods"])
         // .with(systems::PrintGraph, "PrintGraph", &[])
         .build();
 

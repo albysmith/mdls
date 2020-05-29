@@ -105,6 +105,7 @@ pub fn generate_world(workspace_uri: Option<Url>) -> World {
             }
         }
     }
+    info!("world generated");
     world
 }
 
@@ -297,6 +298,7 @@ pub fn new_generate_world(workspace_uri: Option<Url>) -> World {
             }
         }
     }
+    info!("world generated");
     world
 }
 // here for reference
@@ -312,6 +314,7 @@ pub fn new_generate_world(workspace_uri: Option<Url>) -> World {
 fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
     use components::*;
     let mut buffy = components::Buffy::default();
+    let mut islibrary = false;
     buffy.namespace = 1;
     for node in doc.descendants() {
         let node_name = node.tag_name().name();
@@ -329,8 +332,9 @@ fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
                         .build(),
                 );
             }
-            "cues" => {}
+            "cues" => islibrary = false,
             "cue" => {
+                islibrary = false;
                 if let Some(namespace) = node.attribute("namespace") {
                     if namespace == "this" {
                         // TODO FILL BUFFY ENTS, NEXT  UPDATES
@@ -345,17 +349,17 @@ fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
                             if let Some(cue_comp) = cue_storage.get_mut(cue) {
                                 for bnode in buffy.node.iter() {
                                     let x = node_storage.get_mut(bnode.to_owned()).unwrap();
-                                    info!("CUE!!!!{:#?} == {:#?}", x.cue, Some(cue));
+                                    // info!("CUE!!!!{:#?} == {:#?}", x.cue, Some(cue));
                                     if x.cue == Some(cue) {
-                                        info!("CUE MATCHED!!!!!!");
-                                        cue_comp.nodes.push(cue)
+                                        // info!("CUE MATCHED!!!!!!");
+                                        cue_comp.nodes.push(bnode.to_owned())
                                     }
                                     for var in buffy.variable.iter() {
                                         if let Some(v) = variable_storage.get(var.to_owned()) {
-                                    info!("node !!!!{:#?} == {:#?}", v.node, Some(bnode.to_owned()));
+                                            // info!("node !!!!{:#?} == {:#?}", v.node, Some(bnode.to_owned()));
 
                                             if v.node == Some(bnode.to_owned()) {
-                                                info!("node MATCHED!!!!!!");
+                                                // info!("node MATCHED!!!!!!");
 
                                                 cue_comp.variables.push(var.to_owned());
                                                 x.variables.push(var.to_owned())
@@ -393,39 +397,41 @@ fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
             "conditions" => {}
             "delay" => {}
             "actions" => {}
-            "library" => {}
+            "library" => islibrary = true,
             "params" => {}
             "" => {}
             _ => {
-                buffy.node.push(
-                    world
-                        .create_entity()
-                        .with(Node {
-                            script: buffy.script,
-                            cue: Some(buffy.cue.last().unwrap().to_owned()),
-                            namespace: buffy.namespace,
-                            value: node_name.to_owned(),
-                            event: None,
-                            method: None,
-                            ..Default::default()
-                        })
-                        .build(),
-                );
-                for attr in node.attributes() {
-                    buffy.variable.push(
+                if islibrary == false {
+                    buffy.node.push(
                         world
                             .create_entity()
-                            .with(components::Variable {
+                            .with(Node {
                                 script: buffy.script,
                                 cue: Some(buffy.cue.last().unwrap().to_owned()),
                                 namespace: buffy.namespace,
-                                node: Some(buffy.node.last().unwrap().to_owned()),
-                                value: attr.value().to_owned(),
-                                name: attr.name().to_owned(),
+                                value: node_name.to_owned(),
+                                event: None,
+                                method: None,
                                 ..Default::default()
                             })
                             .build(),
-                    )
+                    );
+                    for attr in node.attributes() {
+                        buffy.variable.push(
+                            world
+                                .create_entity()
+                                .with(components::Variable {
+                                    script: buffy.script,
+                                    cue: Some(buffy.cue.last().unwrap().to_owned()),
+                                    namespace: buffy.namespace,
+                                    node: Some(buffy.node.last().unwrap().to_owned()),
+                                    value: attr.value().to_owned(),
+                                    name: attr.name().to_owned(),
+                                    ..Default::default()
+                                })
+                                .build(),
+                        )
+                    }
                 }
             }
         }
