@@ -10,11 +10,11 @@ pub struct Event {
     pub param2: Option<Vec<Datatypes>>,
     pub param3: Option<Vec<Datatypes>>,
 }
-#[derive(Debug,Default,Clone,  Deserialize)]
+#[derive(Debug,Default,Clone,   Deserialize)]
 pub struct EventList {
     pub events: Vec<Event>,
 }
-#[derive(Debug,Default,Clone,  Deserialize)]
+#[derive(Debug,Default,Clone,   Deserialize)]
 pub struct Method {
     pub id: String,
     pub description: String,
@@ -31,7 +31,7 @@ pub struct Method {
 pub struct MethodList {
     pub methods: Vec<Method>,
 }
-#[derive(Debug,Default,Clone,  Deserialize)]
+#[derive(Debug,Default,Clone,   Deserialize)]
 pub struct Output {
     pub attr: String,
     pub datatype: Option<Vec<Datatypes>>,

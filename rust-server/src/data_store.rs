@@ -301,21 +301,12 @@ pub fn new_generate_world(workspace_uri: Option<Url>) -> World {
     info!("world generated");
     world
 }
-// here for reference
-// pub struct Buffy {
-//     pub script: i32,
-//     pub cue: Vec<i32>,
-//     pub node: Vec<i32>,
-//     pub namespace: Vec<i32>,
-//     pub variable: Vec<i32>,
-//     pub this_flag: bool,
-// }
-// TODO: UNFUCK THE UNWRAPS
+
 fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
     use components::*;
     let mut buffy = components::Buffy::default();
+    let mut namespace = 1;
     let mut islibrary = false;
-    buffy.namespace = 1;
     for node in doc.descendants() {
         let node_name = node.tag_name().name();
         match node_name {
@@ -332,106 +323,94 @@ fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
                         .build(),
                 );
             }
-            "cues" => islibrary = false,
+            "cues" => {}
             "cue" => {
                 islibrary = false;
                 if let Some(namespace) = node.attribute("namespace") {
                     if namespace == "this" {
-                        // TODO FILL BUFFY ENTS, NEXT  UPDATES
-
-                        world.maintain();
-
-                        let mut script_storage = world.write_storage::<components::Script>();
-                        let mut cue_storage = world.write_storage::<components::Cue>();
-                        let mut node_storage = world.write_storage::<components::Node>();
-                        let mut variable_storage = world.write_storage::<components::Variable>();
-                        for cue in buffy.cue.to_owned().into_iter() {
-                            if let Some(cue_comp) = cue_storage.get_mut(cue) {
-                                for bnode in buffy.node.iter() {
-                                    let x = node_storage.get_mut(bnode.to_owned()).unwrap();
-                                    // info!("CUE!!!!{:#?} == {:#?}", x.cue, Some(cue));
-                                    if x.cue == Some(cue) {
-                                        // info!("CUE MATCHED!!!!!!");
-                                        cue_comp.nodes.push(bnode.to_owned())
-                                    }
-                                    for var in buffy.variable.iter() {
-                                        if let Some(v) = variable_storage.get(var.to_owned()) {
-                                            // info!("node !!!!{:#?} == {:#?}", v.node, Some(bnode.to_owned()));
-
-                                            if v.node == Some(bnode.to_owned()) {
-                                                // info!("node MATCHED!!!!!!");
-
-                                                cue_comp.variables.push(var.to_owned());
-                                                x.variables.push(var.to_owned())
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            // buffer needs to store a nested object of cue/node/val
-                        }
-                        buffy.this_flag = true;
+                        buffy.next();
                     }
                 };
-                // if someshit is a new namespace {
-                //probably
-                // }
-                buffy.cue.push(
-                    world
-                        .create_entity()
-                        .with(Cue {
+                if node.has_siblings() {
+                    buffy.namespace.push(namespace)
+                }
+
+                let this_cue = world
+                    .create_entity()
+                    .with(Cue {
+                        script: buffy.script,
+                        namespace: namespace,
+                        nodes: vec![],
+                        value: node.attribute("name").unwrap().to_owned(),
+                        path: MdPath {
                             script: buffy.script,
-                            namespace: buffy.namespace,
-                            nodes: vec![],
-                            variables: vec![],
-                            value: node.attribute("name").unwrap().to_owned(),
-                            path: MdPath {
-                                script: buffy.script,
-                                cue: None,
-                            },
-                            newspace: false,
-                        })
-                        .build(),
-                )
+                            cue: None,
+                        },
+                        newspace: false,
+                    })
+                    .build();
+                buffy.cue.push(this_cue);
+                let mut script_storage = world.write_storage::<components::Script>();
+                let script_comp = script_storage.get_mut(buffy.script.unwrap()).unwrap();
+                script_comp.cues.push(this_cue)
             }
             "conditions" => {}
             "delay" => {}
             "actions" => {}
             "library" => islibrary = true,
             "params" => {}
+            "param" => {}
             "" => {}
             _ => {
                 if islibrary == false {
-                    buffy.node.push(
-                        world
+ 
+                  
+                    
+                
+                    let this_node = world
+                        .create_entity()
+                        .with(Node {
+                            script: buffy.script,
+                            cue: Some(buffy.cue.last().unwrap().to_owned()),
+                            namespace: namespace,
+                            value: node_name.to_owned(),
+                            event: None,
+                            method: None,
+                            ..Default::default()
+                        })
+                        .build();
+
+                    buffy.node.push(this_node);
+
+                    for attr in node.attributes() {
+                        let this_var = world
                             .create_entity()
-                            .with(Node {
+                            .with(components::Variable {
                                 script: buffy.script,
                                 cue: Some(buffy.cue.last().unwrap().to_owned()),
-                                namespace: buffy.namespace,
-                                value: node_name.to_owned(),
-                                event: None,
-                                method: None,
+                                namespace: namespace,
+                                node: Some(buffy.node.last().unwrap().to_owned()),
+                                value: attr.value().to_owned(),
+                                name: attr.name().to_owned(),
                                 ..Default::default()
                             })
-                            .build(),
-                    );
-                    for attr in node.attributes() {
-                        buffy.variable.push(
-                            world
-                                .create_entity()
-                                .with(components::Variable {
-                                    script: buffy.script,
-                                    cue: Some(buffy.cue.last().unwrap().to_owned()),
-                                    namespace: buffy.namespace,
-                                    node: Some(buffy.node.last().unwrap().to_owned()),
-                                    value: attr.value().to_owned(),
-                                    name: attr.name().to_owned(),
-                                    ..Default::default()
-                                })
-                                .build(),
-                        )
+                            .build();
+                        buffy.variable.push(this_var)
                     }
+
+                    let mut cue_storage = world.write_storage::<components::Cue>();
+                    let cue_comp = cue_storage
+                        .get_mut(buffy.cue.last().unwrap().to_owned())
+                        .unwrap();
+                    cue_comp.nodes.push(this_node);
+                    let mut node_storage = world.write_storage::<components::Node>();
+                    for var in buffy.variable.iter() {
+                        let node_comp = node_storage
+                            .get_mut(buffy.node.last().unwrap().to_owned())
+                            .unwrap();
+                        node_comp.variables.push(var.to_owned())
+                    }
+                    //
                 }
             }
         }
