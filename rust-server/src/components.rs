@@ -1,50 +1,52 @@
 use crate::*;
 use std::path::PathBuf;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct Variable {
-    pub script: u32,
-    pub cue: u32,
-    pub namespace: u32,
-    pub node: u32,
+    pub script: Option<Entity>,
+    pub cue: Option<Entity>,
+    pub namespace: i32,
+    pub node: Option<Entity>,
     pub value: String,
     pub name: String,
 
     pub possible_types: Vec<Datatypes>,
 }
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct Node {
-    pub script: u32,
-    pub cue: u32,
-    pub namespace: u32,
+    pub script: Option<Entity>,
+    pub cue: Option<Entity>,
+    pub namespace: i32,
     pub value: String,
     pub event: Option<Event>,
     pub method: Option<Method>,
+    pub variables: Vec<Entity>,
 }
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct Cue {
-    pub script: u32,
-    pub namespace: u32,
-    pub nodes: Vec<u32>,
+    pub script: Option<Entity>,
+    pub namespace: i32,
+    pub nodes: Vec<Entity>,
+    pub variables: Vec<Entity>,
     pub value: String,
     pub path: MdPath,
     pub newspace: bool,
 }
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct Script {
-    pub cues: Vec<u32>,
+    pub cues: Vec<Entity>,
     pub value: String,
     pub path: String,
 }
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct NameSpace {
-    pub cues: Vec<u32>,
-    pub vars: Vec<u32>,
+    pub cues: Vec<Entity>,
+    pub vars: Vec<Entity>,
 }
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct MdPath {
-    pub script: u32,
-    pub cue: u32,
+    pub script: Option<Entity>,
+    pub cue: Option<Entity>,
 }
 impl Component for Variable {
     type Storage = VecStorage<Self>;
@@ -64,25 +66,27 @@ impl Component for NameSpace {
 impl Component for MdPath {
     type Storage = VecStorage<Self>;
 }
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct Buffy {
-    pub script: u32,
-    pub cue: Vec<u32>,
-    pub node: Vec<u32>,
-    pub namespace: u32,
-    pub variable: Vec<u32>,
+    pub script: Option<Entity>,
+    pub cue: Vec<Entity>,
+    pub node: Vec<Entity>,
+    pub namespace: i32,
+    pub variable: Vec<Entity>,
     pub this_flag: bool,
     pub reset: bool,
 }
+
+
+
 impl Buffy {
-    pub fn reset(&mut self) {
+    pub fn next(&mut self) {
+        self.script = None;
         self.cue.clear();
-        self.namespace = 1;
+        self.namespace +=1 ;
         self.node.clear();
-        self.script = 1;
         self.variable.clear();
         self.reset = false;
         self.this_flag = false;
-    
-    } 
+    }
 }

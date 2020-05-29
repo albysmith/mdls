@@ -163,7 +163,8 @@ fn main_loop(
     let method_ano = parse_method_ron();
     let event_ano = parse_event_ron();
 
-    let mut world = generate_world(_params.root_uri.clone());
+    // let mut world = generate_world(_params.root_uri.clone());
+    let mut world = new_generate_world(_params.root_uri.clone());
     world.insert(method_ano);
     world.insert(event_ano);
     world.maintain();
@@ -174,6 +175,7 @@ fn main_loop(
         .with(systems::MethodAdder, "addmethods", &[])
         .with(systems::MdEventsPrint, "MdEventsPrint", &["addevents"])
         .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addmethods"])
+        // .with(systems::PrintGraph, "PrintGraph", &[])
         .build();
 
     dispatcher.dispatch(&mut world);
