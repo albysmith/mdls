@@ -120,3 +120,15 @@ impl<'a> System<'a> for PrintMe {
         info!("span count: {:?}", pos.count())
     }
 }
+
+pub struct PrintGraph;
+impl<'a> System<'a> for PrintGraph {
+    type SystemData = ReadStorage<'a, components::Cue>;
+
+    fn run(&mut self, cue: Self::SystemData) {
+        info!("span count: {:?}", cue.count());
+        for c in cue.join() {
+            info!("{:#?}", c)
+        }
+    }
+}
