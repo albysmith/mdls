@@ -91,9 +91,6 @@ impl<'a> System<'a> for MethodAdder {
 //     }
 // }
 
-
-
-
 pub struct MdEventsPrint;
 impl<'a> System<'a> for MdEventsPrint {
     type SystemData = ReadStorage<'a, MdEvents>;
@@ -123,12 +120,55 @@ impl<'a> System<'a> for PrintMe {
 
 pub struct PrintGraph;
 impl<'a> System<'a> for PrintGraph {
-    type SystemData = ReadStorage<'a, components::Cue>;
+    type SystemData = (
+        ReadStorage<'a, components::Script>,
+        ReadStorage<'a, components::Cue>,
+        ReadStorage<'a, components::Node>,
+        ReadStorage<'a, components::Variable>,
+    );
 
-    fn run(&mut self, cue: Self::SystemData) {
-        info!("span count: {:?}", cue.count());
+    fn run(&mut self, (script, cue, node, var): Self::SystemData) {
+        info!("span count: {:?}", script.count());
+        for s in script.join() {
+            info!("{:#?}", s)
+        }
         for c in cue.join() {
             info!("{:#?}", c)
+        }
+        for n in node.join() {
+            info!("{:#?}", n)
+        }
+        for v in var.join() {
+            info!("{:#?}", v)
+        }
+    }
+}
+
+pub struct GraphTypingMethods;
+impl<'a> System<'a> for GraphTypingMethods {
+    type SystemData = (WriteStorage<'a, components::Node>, Read<'a, MethodList>);
+
+    fn run(&mut self, (mut node, methodlist): Self::SystemData) {
+        for node in (&mut node).join() {
+            for method in methodlist.methods.iter() {
+                if node.value == method.id {
+                    node.method = Some((*method).clone())
+                }
+            }
+        }
+    }
+}
+pub struct GraphTypingEvents;
+impl<'a> System<'a> for GraphTypingEvents {
+    type SystemData = (WriteStorage<'a, components::Node>, Read<'a, EventList>);
+
+    fn run(&mut self, (mut node, eventlist): Self::SystemData) {
+        for node in (&mut node).join() {
+            for method in eventlist.events.iter() {
+                if node.value == method.id {
+                    node.event = Some((*method).clone())
+                }
+            }
         }
     }
 }
