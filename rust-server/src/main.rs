@@ -198,7 +198,8 @@ fn main_loop(
                 let mut request = ReqMessage { req: req };
                 if let Ok((id, params)) = request.cast::<HoverRequest>() {
                     // info!("got Hover request #{}: {:?}", id, params);
-                    let resp = get_hover_resp(id, params, &scriptps);
+                    // let resp = get_hover_resp(id, params, &scriptps);
+                    let resp = new_hover_resp(id, params, &mut world);
                     connection.sender.send(Message::Response(resp))?;
                     continue;
                 }

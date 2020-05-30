@@ -129,9 +129,9 @@ impl<'a> System<'a> for PrintGraph {
 
     fn run(&mut self, (script, cue, node, var): Self::SystemData) {
         info!("span count: {:?}", script.count());
-        for s in script.join() {
-            info!("{:#?}", s)
-        }
+        // for s in script.join() {
+        //     info!("{:#?}", s)
+        // }
         // for c in cue.join() {
         //     info!("{:#?}", c)
         // }

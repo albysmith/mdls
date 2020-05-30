@@ -25,8 +25,7 @@ mod tests {
     }
     #[test]
     fn test_recursive_parse() {
-        // let test = include_str!("reference/test_ref/md_namespace_basic.xml");
-        let test = include_str!("X:/SteamLibrary/steamapps/common/X4 Foundations/Extensions/tpwar_trade/md/tpwar_stocks.xml");
+        let test = include_str!("reference/test_ref/md_namespace_basic.xml");
         let mut world = create_world();
         if let Ok(doc) = roxmltree::Document::parse(&test) {
             parse_doc(doc, &mut world, "path".to_string())

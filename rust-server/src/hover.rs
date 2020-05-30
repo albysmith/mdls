@@ -2,14 +2,15 @@
 use lsp_server::{RequestId, Response};
 use lsp_types::{Hover, HoverParams, MarkedString};
 use std::fs;
+use std::path::PathBuf;
 
-use crate::scriptproperties::*;
+use crate::*;
 
 pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptProperties) -> Response {
     // info!("called hover function");
 
     // get &str for what I'm hovering on
-    if let Some((_byte_position, string)) = get_node_and_string(&params) {
+    if let Some((string, path)) = get_string_and_path(&params) {
         // let file_uri = params.text_document_position_params.text_document.uri;
         let line = string
             .lines()
@@ -101,26 +102,15 @@ pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptPrope
     return resp;
 }
 
-fn get_node_and_string(params: &HoverParams) -> Option<(usize, String)> {
+fn get_string_and_path(params: &HoverParams) -> Option<(String, PathBuf)> {
     if let Ok(path) = params
         .text_document_position_params
         .text_document
         .uri
         .to_file_path()
     {
-        if let Ok(string) = fs::read_to_string(path) {
-            if let Some(line) = string
-                .lines()
-                .nth(params.text_document_position_params.position.line as usize)
-            {
-                if let Some(byte_position) = string.find(line) {
-                    Some((byte_position, string))
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
+        if let Ok(string) = fs::read_to_string(&path) {
+            Some((string, path))
         } else {
             None
         }
@@ -128,3 +118,102 @@ fn get_node_and_string(params: &HoverParams) -> Option<(usize, String)> {
         None
     }
 }
+
+pub fn new_hover_resp(id: RequestId, params: HoverParams, world: &mut World) -> Response {
+    let result = Some(lsp_types::Hover {
+        contents: lsp_types::HoverContents::Array(get_hover_values(params, world)),
+        range: None,
+    });
+    let result = serde_json::to_value(&result).unwrap();
+    let resp = Response {
+        id,
+        result: Some(result),
+        error: None,
+    };
+    return resp;
+}
+
+fn get_hover_values(params: HoverParams, world: &mut World) -> Vec<MarkedString> {
+    let mut type_vec = vec![];
+    if let Some((string, path)) = get_string_and_path(&params) {
+        let mut byte_number = 0;
+        let hover_character = params
+            .text_document_position_params
+            .position
+            .character
+            .clone() as usize;
+        let hover_line = params.text_document_position_params.position.line.clone() as usize;
+
+
+
+
+        for (i,line) in string.lines().enumerate() {
+            if i == hover_line {
+                byte_number += hover_character;
+                let variable_storage = world.read_storage::<components::Variable>();
+                let span_storage = world.read_storage::<Span>();
+                let node_storage = world.read_storage::<components::Node>();
+                let entities = world.entities();
+                for (span, var, entity) in (&span_storage, &variable_storage, &entities).join() {
+                    if PathBuf::from(&var.path) == path {
+                        // info!(
+                        //     "bp: {:?} start: {:?} end: {:?}",
+                        //     byte_number, span.start, span.end
+                        // );
+                        if byte_number > span.start && byte_number < span.end {
+                            info!("byte_number: {:?}", byte_number);
+                            if let Some(node) = node_storage.get(var.node.unwrap()) {
+                                info!("node: {:?}", node);
+                                if let Some(method) = &node.method {
+                                    info!("method: {:?}", method);
+                                    for output in method.output.iter() {
+                                        info!("output: {:?}", output);
+                                        info!("output.attr: {:?} var.name: {:?}", output.attr, var.name);
+                                        if output.attr == var.name {
+                                            info!("matched");
+                                            if let Some(types) = &output.contains {
+                                                info!("types: {:?}", types);
+                                                for value in types {
+                                                    info!("value: {:?}", value);
+                                                    type_vec.push(MarkedString::String(format!("{:?}",value)))
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else if let Some(event) = &node.event {
+
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            } else if i == 0 {
+                byte_number += line.len();
+            } else {
+                byte_number += line.len() + 2;
+            }
+
+            // now we have the attribute
+        }
+    }
+    type_vec
+}
+
+// struct TypeInference;
+// impl<'a> System<'a> for TypeInference {
+//     type SystemData = (
+//         Entities<'a>,
+//         WriteStorage<'a, components::Variable>,
+//         ReadStorage<'a, Span>,
+//         ReadStorage<'a, components::Node>,
+//         Read<'a, EventList>,
+//         Read<'a, MethodList>,
+//     );
+//     fn run(&mut self, (entities, mut variable_storage, span_storage, node_storage, eventlist): Self::SystemData) {
+//         for (entity, span) in (&entities, &span_storage).join() {
+
+//         }
+//     }
+
+// }

@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 trait ComponentType {
-    fn create_component<T: Component>(x: T, world: &mut World, entitiy: Entity) {
-        let _x = world.write_component::<T>().insert(entitiy, x);
+    fn create_component<T: Component>(x: T, world: &mut World, entity: Entity) {
+        let _x = world.write_component::<T>().insert(entity, x);
         // info!("create_component: happened");
     }
 }
@@ -392,8 +392,11 @@ fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
     }
 }
 
+
+// NEW WAY BELOW HERE
 struct ParentInfo {
     script: Entity,
+    path: String,
     cue: Option<Entity>,
 }
 
@@ -410,6 +413,7 @@ pub fn parse_doc(doc: roxmltree::Document, world: &mut World, path: String) {
                 .build();
             let parent = ParentInfo {
                 script: script,
+                path: path.to_owned(),
                 cue: None,
             };
             for child in mdscript.children() {
@@ -449,12 +453,14 @@ fn process_cue(cue: roxmltree::Node, parent: &ParentInfo, world: &mut World) {
                 script: Some(parent.script),
                 cue: parent.cue,
             },
+            spath: parent.path.to_owned(),
             newspace: newspace,
             ..Default::default()
         })
         .build();
     let cue_parent = ParentInfo {
         script: parent.script,
+        path: parent.path.to_owned(),
         cue: Some(cue_entity),
     };
     for node in cue.children() {
@@ -506,7 +512,7 @@ fn process_nodes(nodes: roxmltree::Node, parent: &ParentInfo, world: &mut World)
                 value: node.tag_name().name().to_owned(),
                 event: None,
                 method: None,
-                // TODO create match function to match on methods/events?
+                path: parent.path.to_owned(),
                 ..Default::default()
             })
             .build();
@@ -519,6 +525,7 @@ fn process_nodes(nodes: roxmltree::Node, parent: &ParentInfo, world: &mut World)
                     node: Some(this_node),
                     value: attr.value().to_owned(),
                     name: attr.name().to_owned(),
+                    path: parent.path.to_owned(),
                     ..Default::default()
                 })
                 .with(Span {
