@@ -169,12 +169,12 @@ fn main_loop(
     world.insert(event_ano);
     world.maintain();
     let mut dispatcher = DispatcherBuilder::new()
-        .with(systems::PrintMe, "printme", &[])
-        .with(systems::PrintNames, "printme2", &[])
-        .with(systems::EventAdder, "addevents", &[])
-        .with(systems::MethodAdder, "addmethods", &[])
-        .with(systems::MdEventsPrint, "MdEventsPrint", &["addevents"])
-        .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addmethods"])
+        // .with(systems::PrintMe, "printme", &[])
+        // .with(systems::PrintNames, "printme2", &[])
+        // .with(systems::EventAdder, "addevents", &[])
+        // .with(systems::MethodAdder, "addmethods", &[])
+        // .with(systems::MdEventsPrint, "MdEventsPrint", &["addevents"])
+        // .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addmethods"])
         .with(systems::PrintGraph, "PrintGraph", &[])
         .with(systems::GraphTypingMethods, "GraphTypingMethods", &[])
         .with(systems::GraphTypingEvents, "GraphTypingEvents", &[])

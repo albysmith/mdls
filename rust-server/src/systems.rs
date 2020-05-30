@@ -132,15 +132,15 @@ impl<'a> System<'a> for PrintGraph {
         for s in script.join() {
             info!("{:#?}", s)
         }
-        for c in cue.join() {
-            info!("{:#?}", c)
-        }
-        for n in node.join() {
-            info!("{:#?}", n)
-        }
-        for v in var.join() {
-            info!("{:#?}", v)
-        }
+        // for c in cue.join() {
+        //     info!("{:#?}", c)
+        // }
+        // for n in node.join() {
+        //     info!("{:#?}", n)
+        // }
+        // for v in var.join() {
+        //     info!("{:#?}", v)
+        // }
     }
 }
 
