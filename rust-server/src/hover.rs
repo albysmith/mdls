@@ -119,7 +119,7 @@ fn get_string_and_path(params: &HoverParams) -> Option<(String, PathBuf)> {
     }
 }
 
-pub fn new_hover_resp(id: RequestId, params: HoverParams, world: &mut World) -> Response {
+pub fn new_hover_resp(id: RequestId, params: HoverParams, world: &World) -> Response {
     let result = Some(lsp_types::Hover {
         contents: lsp_types::HoverContents::Array(get_hover_values(params, world)),
         range: None,
@@ -133,7 +133,7 @@ pub fn new_hover_resp(id: RequestId, params: HoverParams, world: &mut World) -> 
     return resp;
 }
 
-fn get_hover_values(params: HoverParams, world: &mut World) -> Vec<MarkedString> {
+fn get_hover_values(params: HoverParams, world: &World) -> Vec<MarkedString> {
     let mut type_vec = vec![];
     if let Some((string, path)) = get_string_and_path(&params) {
         let mut byte_number = 0;
@@ -144,15 +144,14 @@ fn get_hover_values(params: HoverParams, world: &mut World) -> Vec<MarkedString>
             .clone() as usize;
         let hover_line = params.text_document_position_params.position.line.clone() as usize;
 
-
-
-
-        for (i,line) in string.lines().enumerate() {
+        for (i, line) in string.lines().enumerate() {
             if i == hover_line {
                 byte_number += hover_character;
                 let variable_storage = world.read_storage::<components::Variable>();
                 let span_storage = world.read_storage::<Span>();
                 let node_storage = world.read_storage::<components::Node>();
+                let cue_storage = world.read_storage::<components::Cue>();
+
                 let entities = world.entities();
                 for (span, var, entity) in (&span_storage, &variable_storage, &entities).join() {
                     if PathBuf::from(&var.path) == path {
@@ -161,27 +160,32 @@ fn get_hover_values(params: HoverParams, world: &mut World) -> Vec<MarkedString>
                         //     byte_number, span.start, span.end
                         // );
                         if byte_number > span.start && byte_number < span.end {
-                            info!("byte_number: {:?}", byte_number);
-                            if let Some(node) = node_storage.get(var.node.unwrap()) {
-                                info!("node: {:?}", node);
-                                if let Some(method) = &node.method {
-                                    info!("method: {:?}", method);
-                                    for output in method.output.iter() {
-                                        info!("output: {:?}", output);
-                                        info!("output.attr: {:?} var.name: {:?}", output.attr, var.name);
-                                        if output.attr == var.name {
-                                            info!("matched");
-                                            if let Some(types) = &output.contains {
-                                                info!("types: {:?}", types);
-                                                for value in types {
-                                                    info!("value: {:?}", value);
-                                                    type_vec.push(MarkedString::String(format!("{:?}",value)))
+                            // info!("byte_number: {:?}", byte_number);
+                            if let Some(data_types) = get_types(var, world) {
+                                for d in data_types.iter() {
+                                    type_vec.push(MarkedString::String(format!("Possible Type: {:?}", d)));
+                                }
+                            } else {
+                                let mut namespace_cues = vec![];
+                                get_namespace_cues(&mut namespace_cues, world, var.cue);
+                                for n_cue in namespace_cues.into_iter() {
+                                    for cue_var in n_cue.variables.iter() {
+                                        let cvariable = cue_var.to_owned();
+                                        if cvariable != entity {
+                                            if let Some(var_comp) = variable_storage.get(cvariable)
+                                            {
+                                                if var_comp.value == var.value {
+                                                    if let Some(d_types) = get_types(var_comp, world){
+                                                        for d in d_types.iter() {
+                                                            type_vec.push(MarkedString::String(format!("Possible Type: {:?}", d)));
+                                                        }
+                        
+                                                    }
+                                                    break;
                                                 }
                                             }
                                         }
                                     }
-                                } else if let Some(event) = &node.event {
-
                                 }
                             }
                             break;
@@ -200,20 +204,45 @@ fn get_hover_values(params: HoverParams, world: &mut World) -> Vec<MarkedString>
     type_vec
 }
 
-// struct TypeInference;
-// impl<'a> System<'a> for TypeInference {
-//     type SystemData = (
-//         Entities<'a>,
-//         WriteStorage<'a, components::Variable>,
-//         ReadStorage<'a, Span>,
-//         ReadStorage<'a, components::Node>,
-//         Read<'a, EventList>,
-//         Read<'a, MethodList>,
-//     );
-//     fn run(&mut self, (entities, mut variable_storage, span_storage, node_storage, eventlist): Self::SystemData) {
-//         for (entity, span) in (&entities, &span_storage).join() {
+fn get_types(
+    var: &components::Variable,
+    world: &World,
+) -> Option<Vec<Datatypes>> {
+    // let variable_storage = world.read_storage::<components::Variable>();
+    let node_storage = world.read_storage::<components::Node>();
+    // let cue_storage = world.read_storage::<components::Cue>();
 
-//         }
-//     }
+    if let Some(node) = node_storage.get(var.node.unwrap()) {
+        // info!("node: {:?}", node);
+        if let Some(method) = &node.method {
+            // info!("method: {:?}", method);
+            for output in method.output.iter() {
+                // info!("output: {:?}", output);
+                // info!("output.attr: {:?} var.name: {:?}", output.attr, var.name);
+                if output.attr == var.name {
+                    info!("matched");
+                    if let Some(types) = &output.contains {
+                        let mut type_vec = vec![];
+                        info!("types: {:?}", types);
+                        for value in types {
+                            info!("value: {:?}", value);
+                            type_vec.push(value.to_owned());
+                        }
+                        return Some(type_vec);
+                    }
+                }
+            }
+        }
+    }
+    None
+}
 
-// }
+fn get_namespace_cues(cue_vec: &mut Vec<components::Cue>, world: &World, op_cue: Option<Entity>) {
+    let cue_storage = world.read_storage::<components::Cue>();
+    if let Some(e) = op_cue {
+        if let Some(cue) = cue_storage.get(e) {
+            cue_vec.push(cue.to_owned());
+            get_namespace_cues(cue_vec, world, cue.parent)
+        }
+    }
+}

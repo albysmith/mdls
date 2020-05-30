@@ -392,7 +392,6 @@ fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
     }
 }
 
-
 // NEW WAY BELOW HERE
 struct ParentInfo {
     script: Entity,
@@ -504,35 +503,43 @@ fn process_library(library: roxmltree::Node, parent: &ParentInfo, world: &mut Wo
 
 fn process_nodes(nodes: roxmltree::Node, parent: &ParentInfo, world: &mut World) {
     for node in nodes.descendants() {
-        let this_node = world
-            .create_entity()
-            .with(components::Node {
-                script: Some(parent.script),
-                cue: parent.cue,
-                value: node.tag_name().name().to_owned(),
-                event: None,
-                method: None,
-                path: parent.path.to_owned(),
-                ..Default::default()
-            })
-            .build();
-        for attr in node.attributes() {
-            let _this_var = world
-                .create_entity()
-                .with(components::Variable {
-                    script: Some(parent.script),
-                    cue: parent.cue,
-                    node: Some(this_node),
-                    value: attr.value().to_owned(),
-                    name: attr.name().to_owned(),
-                    path: parent.path.to_owned(),
-                    ..Default::default()
-                })
-                .with(Span {
-                    start: attr.value_range().start,
-                    end: attr.value_range().end,
-                })
-                .build();
+        match node.tag_name().name() {
+            "" => {}
+            " " => {}
+            "actions" => {}
+            "conditions" => {}
+            _ => {
+                let this_node = world
+                    .create_entity()
+                    .with(components::Node {
+                        script: Some(parent.script),
+                        cue: parent.cue,
+                        value: node.tag_name().name().to_owned(),
+                        event: None,
+                        method: None,
+                        path: parent.path.to_owned(),
+                        ..Default::default()
+                    })
+                    .build();
+                for attr in node.attributes() {
+                    let _this_var = world
+                        .create_entity()
+                        .with(components::Variable {
+                            script: Some(parent.script),
+                            cue: parent.cue,
+                            node: Some(this_node),
+                            value: attr.value().to_owned(),
+                            name: attr.name().to_owned(),
+                            path: parent.path.to_owned(),
+                            ..Default::default()
+                        })
+                        .with(Span {
+                            start: attr.value_range().start,
+                            end: attr.value_range().end,
+                        })
+                        .build();
+                }
+            }
         }
     }
 }

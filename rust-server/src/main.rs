@@ -162,6 +162,7 @@ fn main_loop(
 
     let method_ano = parse_method_ron();
     let event_ano = parse_event_ron();
+    let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
 
     // let mut world = generate_world(_params.root_uri.clone());
     let mut world = new_generate_world(_params.root_uri.clone());
@@ -175,37 +176,30 @@ fn main_loop(
         // .with(systems::MethodAdder, "addmethods", &[])
         // .with(systems::MdEventsPrint, "MdEventsPrint", &["addevents"])
         // .with(systems::MdMethodsPrint, "MdMethodsPrint", &["addmethods"])
-        .with(systems::PrintGraph, "PrintGraph", &[])
         .with(systems::GraphTypingMethods, "GraphTypingMethods", &[])
         .with(systems::GraphTypingEvents, "GraphTypingEvents", &[])
+        .with(systems::AddVarsToNodes, "AddVarsToNodes", &[])
+        .with(systems::AddVarsToCues, "AddVarsToCues", &[])
+        .with(systems::AddNodesToCues, "AddNodesToCues", &[])
+        .with(systems::AddCuesToScript, "AddCuesToScript", &[])
+        .with(systems::PrintGraph, "PrintGraph", &["AddCuesToScript", "AddNodesToCues", "AddVarsToNodes", "AddVarsToCues"])
         .build();
 
     dispatcher.dispatch(&mut world);
 
-    // dispatcher.dispatch(&mut world);
-    // also bring over our scriptproperties
-    let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
-
     for msg in &connection.receiver {
-        // info!("got msg: {:?}", msg);
         match msg {
             Message::Request(req) => {
                 if connection.handle_shutdown(&req)? {
                     return Ok(());
                 }
-                // info!("got request: {:?}", req);
-
                 let mut request = ReqMessage { req: req };
                 if let Ok((id, params)) = request.cast::<HoverRequest>() {
-                    // info!("got Hover request #{}: {:?}", id, params);
-                    // let resp = get_hover_resp(id, params, &scriptps);
                     let resp = new_hover_resp(id, params, &mut world);
                     connection.sender.send(Message::Response(resp))?;
                     continue;
                 }
                 if let Ok((id, params)) = request.cast::<Completion>() {
-                    // info!("got COMPLETION request!!! {:#?}", params);
-
                     let result = CompletionResponse::Array(simple_complete(params));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
@@ -217,7 +211,6 @@ fn main_loop(
                     continue;
                 }
                 if let Ok((id, params)) = request.cast::<GotoDefinition>() {
-                    // info!("got gotoDefinition request #{}: {:?}", id, params);
                     let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
                         params, &mut world,
                     )));
@@ -230,61 +223,15 @@ fn main_loop(
                     connection.sender.send(Message::Response(resp))?;
                     continue;
                 }
-                // match cast::<GotoDefinition>(req) {
-                //     Ok((id, params)) => {
-                // info!("got gotoDefinition request #{}: {:?}", id, params);
-                //         let result = Some(lsp_types::GotoDefinitionResponse::Array(Vec::new()));
-                //         let result = serde_json::to_value(&result).unwrap();
-                //         let resp = Response {
-                //             id,
-                //             result: Some(result),
-                //             error: None,
-                //         };
-                //         connection.sender.send(Message::Response(resp))?;
-                //         continue;
-                //     }
-                //     Err(req) => req,
-                // };
-                // match cast::<HoverRequest>(req) {
-                //     Ok((id, params)) => {
-                //         info!("got Hover request #{}: {:?}", id, params);
-                //         let result = Some(lsp_types::Hover {
-                //             contents: lsp_types::HoverContents::Scalar(
-                //                 lsp_types::MarkedString::String("Hello World!".to_string()),
-                //             ),
-                //             range: None,
-                //         });
-                //         let result = serde_json::to_value(&result).unwrap();
-                //         let resp = Response {
-                //             id,
-                //             result: Some(result),
-                //             error: None,
-                //         };
-                //         connection.sender.send(Message::Response(resp))?;
-                //         continue;
-                //     }
-                //     Err(req) => (),
-                // }
-                // ...
             }
             Message::Response(_resp) => {
-                // info!("got response: {:?}", resp);
             }
             Message::Notification(_not) => {
-                // info!("got notification: {:?}", not);
             }
         }
     }
     Ok(())
 }
-
-// fn cast<R>(req: Request) -> Result<(RequestId, R::Params), Request>
-// where
-//     R: lsp_types::request::Request,
-//     R::Params: serde::de::DeserializeOwned,
-// {
-//     req.extract(R::METHOD)
-// }
 
 #[derive(Clone)]
 struct ReqMessage {

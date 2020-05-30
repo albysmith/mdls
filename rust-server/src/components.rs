@@ -31,7 +31,7 @@ pub struct Cue {
     pub child: Option<Entity>,
     pub new: bool,
     pub nodes: Vec<Entity>,
-    // pub variables: Vec<Entity>,
+    pub variables: Vec<Entity>,
     pub path: MdPath,
     pub newspace: bool,
     pub spath: String,
