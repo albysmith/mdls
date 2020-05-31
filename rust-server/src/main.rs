@@ -168,6 +168,7 @@ fn main_loop(
     let mut world = new_generate_world(_params.root_uri.clone());
     world.insert(method_ano);
     world.insert(event_ano);
+    world.insert(scriptps);
     world.maintain();
     let mut dispatcher = DispatcherBuilder::new()
         // .with(systems::PrintMe, "printme", &[])

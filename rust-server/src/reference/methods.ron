@@ -156,6 +156,36 @@ Method (
 	],
 ),
 Method (
+	id: "create_group",
+	description: "create group of objects",
+	output: [
+		Output (
+			attr: "groupname",
+			datatype: Some([Group]),
+		),
+	],
+),
+Method (
+	id: "add_to_group",
+	description: "add to group of objects",
+	output: [
+		Output (
+			attr: "groupname",
+			datatype: Some([Group]),
+		),
+	],
+),
+Method (
+	id: "remove_group",
+	description: "remove group of objects",
+	output: [
+		Output (
+			attr: "groupname",
+			datatype: Some([Group]),
+		),
+	],
+),
+Method (
 	id: "set_value",
 	description: "Set a variable value (dummy condition that is always met, so it can be used like an action)",
 	output: [
@@ -809,6 +839,14 @@ Method (
 			datatype: Some([Group]),
 			contains: Some([Ship]),
 		),
+		// Output (
+		// 	attr: "dock",
+		// 	datatype: Some([Dockingbay]),
+		// ),
+		// Output (
+		// 	attr: "macro",
+		// 	datatype: Some([Macro]),
+		// ),
 	],
 ),
 Method (

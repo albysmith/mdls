@@ -149,37 +149,94 @@ fn get_hover_values(params: HoverParams, world: &World) -> Vec<MarkedString> {
                 byte_number += hover_character;
                 let variable_storage = world.read_storage::<components::Variable>();
                 let span_storage = world.read_storage::<Span>();
-                let node_storage = world.read_storage::<components::Node>();
-                let cue_storage = world.read_storage::<components::Cue>();
+                // let node_storage = world.read_storage::<components::Node>();
+                // let cue_storage = world.read_storage::<components::Cue>();
 
                 let entities = world.entities();
                 for (span, var, entity) in (&span_storage, &variable_storage, &entities).join() {
                     if PathBuf::from(&var.path) == path {
-                        // info!(
-                        //     "bp: {:?} start: {:?} end: {:?}",
-                        //     byte_number, span.start, span.end
-                        // );
                         if byte_number > span.start && byte_number < span.end {
-                            // info!("byte_number: {:?}", byte_number);
                             if let Some(data_types) = get_types(var, world) {
                                 for d in data_types.iter() {
-                                    type_vec.push(MarkedString::String(format!("Possible Type: {:?}", d)));
+                                    let text = format!("{:?}", d).to_ascii_lowercase();
+                                    type_vec.push(MarkedString::String(format!(
+                                        "possible type: *{}*",
+                                        text
+                                    )));
                                 }
                             } else {
+                                let char_into_attr = byte_number - span.start;
+                                let mut target = String::new();
+                                let mut flag = false;
+                                for (i, character) in var.value.chars().enumerate() {
+                                    if i == char_into_attr {
+                                        flag = true
+                                    }
+                                    match character.to_ascii_lowercase() {
+                                        'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i'
+                                        | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r'
+                                        | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | '$'
+                                        | '_' => {
+                                            target.push(character);
+                                        }
+                                        _ => {
+                                            if flag == true {
+                                                break;
+                                            } else {
+                                                target.clear()
+                                            }
+                                        }
+                                    }
+                                }
+                                info!("{}", target);
+                                if !target.contains("$") {
+                                    let scriptps = world.read_resource::<ScriptProperties>();
+                                    let find = scriptps.search(&target);
+                                    for entry in find.iter() {
+                                        let text =
+                                            format!("{:?}", entry.datatype).to_ascii_lowercase();
+                                        type_vec.push(MarkedString::String(format!(
+                                            "property of type: *{}* | **result type: {}** | description: {}",
+                                            text,
+                                            if let Some(name) = &entry.prop_type {
+                                                name
+                                            } else {
+                                                "unknown"
+                                            },
+                                            if let Some(name) = &entry.prop_result {
+                                                name
+                                            } else {
+                                                "unknown"
+                                            },
+                                        )))
+                                    }
+                                }
                                 let mut namespace_cues = vec![];
                                 get_namespace_cues(&mut namespace_cues, world, var.cue);
+
                                 for n_cue in namespace_cues.into_iter() {
                                     for cue_var in n_cue.variables.iter() {
                                         let cvariable = cue_var.to_owned();
                                         if cvariable != entity {
                                             if let Some(var_comp) = variable_storage.get(cvariable)
                                             {
-                                                if var_comp.value == var.value {
-                                                    if let Some(d_types) = get_types(var_comp, world){
+                                                if var_comp.value == var.value
+                                                    || (target == var_comp.value
+                                                        && target.contains("$"))
+                                                {
+                                                    if let Some(d_types) =
+                                                        get_types(var_comp, world)
+                                                    {
                                                         for d in d_types.iter() {
-                                                            type_vec.push(MarkedString::String(format!("Possible Type: {:?}", d)));
+                                                            let text = format!("{:?}", d)
+                                                                .to_ascii_lowercase();
+                                                            type_vec.push(MarkedString::String(
+                                                                format!(
+                                                                    "possible type: *{}*",
+                                                                    text
+                                                                ),
+                                                            ));
                                                         }
-                        
                                                     }
                                                     break;
                                                 }
@@ -192,25 +249,17 @@ fn get_hover_values(params: HoverParams, world: &World) -> Vec<MarkedString> {
                         }
                     }
                 }
-            } else if i == 0 {
-                byte_number += line.len();
             } else {
                 byte_number += line.len() + 2;
             }
-
-            // now we have the attribute
         }
     }
     type_vec
 }
 
-fn get_types(
-    var: &components::Variable,
-    world: &World,
-) -> Option<Vec<Datatypes>> {
-    // let variable_storage = world.read_storage::<components::Variable>();
+fn get_types(var: &components::Variable, world: &World) -> Option<Vec<Datatypes>> {
     let node_storage = world.read_storage::<components::Node>();
-    // let cue_storage = world.read_storage::<components::Cue>();
+    let variable_storage = world.read_storage::<components::Variable>();
 
     if let Some(node) = node_storage.get(var.node.unwrap()) {
         // info!("node: {:?}", node);
@@ -220,12 +269,33 @@ fn get_types(
                 // info!("output: {:?}", output);
                 // info!("output.attr: {:?} var.name: {:?}", output.attr, var.name);
                 if output.attr == var.name {
-                    info!("matched");
+                    // info!("matched");
+                    let mut multiple = false;
+                    for attribute in node.variables.iter() {
+                        if let Some(comp) = variable_storage.get(attribute.to_owned()) {
+                            if comp.name == "multiple".to_string() {
+                                if comp.value == "true".to_string() {
+                                    multiple = true
+                                }
+                            }
+                        }
+                    }
+                    if multiple == true {
+                        if let Some(types) = &output.datatype {
+                            let mut type_vec = vec![];
+                            // info!("types: {:?}", types);
+                            for value in types {
+                                // info!("value: {:?}", value);
+                                type_vec.push(value.to_owned());
+                            }
+                            return Some(type_vec);
+                        }
+                    } 
                     if let Some(types) = &output.contains {
                         let mut type_vec = vec![];
-                        info!("types: {:?}", types);
+                        // info!("types: {:?}", types);
                         for value in types {
-                            info!("value: {:?}", value);
+                            // info!("value: {:?}", value);
                             type_vec.push(value.to_owned());
                         }
                         return Some(type_vec);

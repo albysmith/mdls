@@ -467,6 +467,7 @@ fn process_cue(cue: roxmltree::Node, parent: &ParentInfo, world: &mut World) {
             "conditions" => process_nodes(node, &cue_parent, world),
             "delay" => process_delay(node, &cue_parent, world),
             "actions" => process_nodes(node, &cue_parent, world),
+            "patch" => process_nodes(node, &cue_parent, world),
             "cues" => {
                 for cue in node.children() {
                     match cue.tag_name().name() {
@@ -508,6 +509,7 @@ fn process_nodes(nodes: roxmltree::Node, parent: &ParentInfo, world: &mut World)
             " " => {}
             "actions" => {}
             "conditions" => {}
+            "patch" => {}
             _ => {
                 let this_node = world
                     .create_entity()
