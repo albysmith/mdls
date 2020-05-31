@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 trait ComponentType {
-    fn create_component<T: Component>(x: T, world: &mut World, entitiy: Entity) {
-        let _x = world.write_component::<T>().insert(entitiy, x);
+    fn create_component<T: Component>(x: T, world: &mut World, entity: Entity) {
+        let _x = world.write_component::<T>().insert(entity, x);
         // info!("create_component: happened");
     }
 }
@@ -82,8 +82,8 @@ pub struct Position {
 }
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Span {
-    pub start: Position,
-    pub end: Position,
+    pub start: usize,
+    pub end: usize,
 }
 impl Component for Span {
     type Storage = VecStorage<Self>;
@@ -109,7 +109,7 @@ pub fn generate_world(workspace_uri: Option<Url>) -> World {
     world
 }
 
-fn create_world() -> World {
+pub fn create_world() -> World {
     let mut world = World::new();
     world.register::<Span>();
     world.register::<Variable>();
@@ -224,12 +224,8 @@ pub fn attr_parse(node: roxmltree::Node, world: &mut World) {
         world
             .create_entity()
             .with(Span {
-                start: Position {
-                    bytes: start_pos as usize,
-                },
-                end: Position {
-                    bytes: end_pos as usize,
-                },
+                start: start_pos as usize,
+                end: end_pos as usize,
             })
             .with(Variable {
                 text: attr.value().to_string(),
@@ -258,12 +254,8 @@ pub fn go_to_def_temp(paths: &Option<Vec<File>>, world: &mut World) {
                                 world
                                     .create_entity()
                                     .with(Span {
-                                        start: Position {
-                                            bytes: start_pos as usize,
-                                        },
-                                        end: Position {
-                                            bytes: end_pos as usize,
-                                        },
+                                        start: start_pos as usize,
+                                        end: end_pos as usize,
                                     })
                                     .with(Variable {
                                         text: attr.value().to_string(),
@@ -286,14 +278,13 @@ pub fn go_to_def_temp(paths: &Option<Vec<File>>, world: &mut World) {
 
 pub fn new_generate_world(workspace_uri: Option<Url>) -> World {
     let files = get_xml(workspace_uri);
-
     let mut world = create_world();
-
-    if let Some(files) = files {
-        for file in files.iter() {
+    if let Some(files1) = files {
+        for file in files1.iter() {
             if let Ok(string) = fs::read_to_string(&file.path) {
                 if let Ok(doc) = roxmltree::Document::parse(&string) {
-                    parse_doc_to_components(doc, &mut world)
+                    // parse_doc_to_components(doc, &mut world)
+                    parse_doc(doc, &mut world, file.path.to_str().unwrap().to_string())
                 }
             }
         }
@@ -305,74 +296,76 @@ pub fn new_generate_world(workspace_uri: Option<Url>) -> World {
 fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
     use components::*;
     let mut buffy = components::Buffy::default();
-    let mut namespace = 1;
-    let mut islibrary = false;
     for node in doc.descendants() {
         let node_name = node.tag_name().name();
         match node_name {
             "mdscript" => {
+                buffy.is_md = true;
                 buffy.next();
                 buffy.script = Some(
                     world
                         .create_entity()
                         .with(components::Script {
-                            cues: vec![],
                             path: "TEMPpath".to_string(),
-                            value: node.attribute("name").unwrap().to_owned(),
+                            value: node.attribute("name").expect("script name").to_owned(),
+                            ..Default::default()
                         })
                         .build(),
                 );
             }
-            "cues" => {}
-            "cue" => {
-                islibrary = false;
-                if let Some(namespace) = node.attribute("namespace") {
-                    if namespace == "this" {
-                        buffy.next();
-                    }
-                };
-                if node.has_siblings() {
-                    buffy.namespace.push(namespace)
+            "cues" => {
+                if buffy.is_md == true {
+                    buffy.parent = buffy.cue
                 }
+            }
+            "cue" => {
+                if buffy.is_library == false && buffy.is_md == true {
+                    if let Some(namespace_flag) = node.attribute("namespace") {
+                        if namespace_flag == "this" {
+                            buffy.is_new = true;
+                        } else {
+                            buffy.is_new = false;
+                        }
+                    } else {
+                        buffy.is_new = false;
+                    }
 
-                let this_cue = world
-                    .create_entity()
-                    .with(Cue {
-                        script: buffy.script,
-                        namespace: namespace,
-                        nodes: vec![],
-                        value: node.attribute("name").unwrap().to_owned(),
-                        path: MdPath {
+                    let this_cue = world
+                        .create_entity()
+                        .with(Cue {
                             script: buffy.script,
-                            cue: None,
-                        },
-                        newspace: false,
-                    })
-                    .build();
-                buffy.cue.push(this_cue);
-                let mut script_storage = world.write_storage::<components::Script>();
-                let script_comp = script_storage.get_mut(buffy.script.unwrap()).unwrap();
-                script_comp.cues.push(this_cue)
+                            value: node.attribute("name").expect("cue name").to_owned(),
+                            new: buffy.is_new,
+                            parent: buffy.parent,
+                            child: buffy.child,
+                            path: components::MdPath {
+                                script: buffy.script,
+                                cue: None,
+                            },
+                            newspace: false,
+                            ..Default::default()
+                        })
+                        .build();
+                    buffy.cue = Some(this_cue);
+                    if let Some(child) = node.first_child() {
+                        if child.tag_name().name() != "cues" {}
+                    }
+                }
             }
             "conditions" => {}
             "delay" => {}
             "actions" => {}
-            "library" => islibrary = true,
+            "library" => buffy.is_library = true,
             "params" => {}
             "param" => {}
             "" => {}
             _ => {
-                if islibrary == false {
- 
-                  
-                    
-                
+                if buffy.is_library == false && buffy.is_md == true {
                     let this_node = world
                         .create_entity()
                         .with(Node {
                             script: buffy.script,
-                            cue: Some(buffy.cue.last().unwrap().to_owned()),
-                            namespace: namespace,
+                            cue: buffy.cue,
                             value: node_name.to_owned(),
                             event: None,
                             method: None,
@@ -380,39 +373,176 @@ fn parse_doc_to_components(doc: roxmltree::Document, world: &mut World) {
                         })
                         .build();
 
-                    buffy.node.push(this_node);
-
                     for attr in node.attributes() {
-                        let this_var = world
+                        let _this_var = world
                             .create_entity()
                             .with(components::Variable {
                                 script: buffy.script,
-                                cue: Some(buffy.cue.last().unwrap().to_owned()),
-                                namespace: namespace,
-                                node: Some(buffy.node.last().unwrap().to_owned()),
+                                cue: buffy.cue,
+                                node: Some(this_node),
                                 value: attr.value().to_owned(),
                                 name: attr.name().to_owned(),
                                 ..Default::default()
                             })
                             .build();
-                        buffy.variable.push(this_var)
                     }
-
-                    let mut cue_storage = world.write_storage::<components::Cue>();
-                    let cue_comp = cue_storage
-                        .get_mut(buffy.cue.last().unwrap().to_owned())
-                        .unwrap();
-                    cue_comp.nodes.push(this_node);
-                    let mut node_storage = world.write_storage::<components::Node>();
-                    for var in buffy.variable.iter() {
-                        let node_comp = node_storage
-                            .get_mut(buffy.node.last().unwrap().to_owned())
-                            .unwrap();
-                        node_comp.variables.push(var.to_owned())
-                    }
-                    //
                 }
             }
         }
     }
 }
+
+// NEW WAY BELOW HERE
+struct ParentInfo {
+    script: Entity,
+    path: String,
+    cue: Option<Entity>,
+}
+
+pub fn parse_doc(doc: roxmltree::Document, world: &mut World, path: String) {
+    for mdscript in doc.root().children() {
+        if mdscript.tag_name().name() == "mdscript" {
+            let script = world
+                .create_entity()
+                .with(components::Script {
+                    path: path.to_owned(),
+                    value: mdscript.attribute("name").expect("script name").to_owned(),
+                    ..Default::default()
+                })
+                .build();
+            let parent = ParentInfo {
+                script: script,
+                path: path.to_owned(),
+                cue: None,
+            };
+            for child in mdscript.children() {
+                match child.tag_name().name() {
+                    "cues" => {
+                        for cue in child.children() {
+                            match cue.tag_name().name() {
+                                "cue" => process_cue(cue, &parent, world),
+                                "library" => process_library(cue, &parent, world),
+                                _ => {}
+                            }
+                        }
+                    }
+                    "" => {}
+                    _ => {}
+                }
+            }
+        }
+    }
+}
+
+fn process_cue(cue: roxmltree::Node, parent: &ParentInfo, world: &mut World) {
+    let mut newspace = false;
+    if let Some(this) = cue.attribute("namespace") {
+        if this == "this" {
+            newspace = true
+        }
+    }
+    let cue_entity = world
+        .create_entity()
+        .with(components::Cue {
+            script: Some(parent.script),
+            value: cue.attribute("name").expect("cue name").to_owned(),
+            new: true,
+            parent: if newspace == false { parent.cue } else { None },
+            path: components::MdPath {
+                script: Some(parent.script),
+                cue: parent.cue,
+            },
+            spath: parent.path.to_owned(),
+            newspace: newspace,
+            ..Default::default()
+        })
+        .build();
+    let cue_parent = ParentInfo {
+        script: parent.script,
+        path: parent.path.to_owned(),
+        cue: Some(cue_entity),
+    };
+    for node in cue.children() {
+        match node.tag_name().name() {
+            "conditions" => process_nodes(node, &cue_parent, world),
+            "delay" => process_delay(node, &cue_parent, world),
+            "actions" => process_nodes(node, &cue_parent, world),
+            "patch" => process_nodes(node, &cue_parent, world),
+            "cues" => {
+                for cue in node.children() {
+                    match cue.tag_name().name() {
+                        "cue" => process_cue(cue, &cue_parent, world),
+                        "library" => process_library(cue, &cue_parent, world),
+                        _ => (),
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+fn process_library(library: roxmltree::Node, parent: &ParentInfo, world: &mut World) {
+    for node in library.children() {
+        match node.tag_name().name() {
+            "conditions" => {}
+            "params" => {}
+            "delay" => {}
+            "actions" => {}
+            "cues" => {
+                for cue in node.children() {
+                    match cue.tag_name().name() {
+                        "cue" => {}
+                        "library" => {}
+                        _ => {}
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn process_nodes(nodes: roxmltree::Node, parent: &ParentInfo, world: &mut World) {
+    for node in nodes.descendants() {
+        match node.tag_name().name() {
+            "" => {}
+            " " => {}
+            "actions" => {}
+            "conditions" => {}
+            "patch" => {}
+            _ => {
+                let this_node = world
+                    .create_entity()
+                    .with(components::Node {
+                        script: Some(parent.script),
+                        cue: parent.cue,
+                        value: node.tag_name().name().to_owned(),
+                        event: None,
+                        method: None,
+                        path: parent.path.to_owned(),
+                        ..Default::default()
+                    })
+                    .build();
+                for attr in node.attributes() {
+                    let _this_var = world
+                        .create_entity()
+                        .with(components::Variable {
+                            script: Some(parent.script),
+                            cue: parent.cue,
+                            node: Some(this_node),
+                            value: attr.value().to_owned(),
+                            name: attr.name().to_owned(),
+                            path: parent.path.to_owned(),
+                            ..Default::default()
+                        })
+                        .with(Span {
+                            start: attr.value_range().start,
+                            end: attr.value_range().end,
+                        })
+                        .build();
+                }
+            }
+        }
+    }
+}
+fn process_delay(delay: roxmltree::Node, parent: &ParentInfo, world: &mut World) {}

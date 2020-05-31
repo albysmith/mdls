@@ -129,18 +129,18 @@ impl<'a> System<'a> for PrintGraph {
 
     fn run(&mut self, (script, cue, node, var): Self::SystemData) {
         info!("span count: {:?}", script.count());
-        for s in script.join() {
-            info!("{:#?}", s)
-        }
-        for c in cue.join() {
-            info!("{:#?}", c)
-        }
-        for n in node.join() {
-            info!("{:#?}", n)
-        }
-        for v in var.join() {
-            info!("{:#?}", v)
-        }
+        // for s in script.join() {
+        //     info!("{:#?}", s)
+        // }
+        // for c in cue.join() {
+        //     info!("{:#?}", c)
+        // }
+        // for n in node.join() {
+        //     info!("{:#?}", n)
+        // }
+        // for v in var.join() {
+        //     info!("{:#?}", v)
+        // }
     }
 }
 
@@ -168,6 +168,55 @@ impl<'a> System<'a> for GraphTypingEvents {
                 if node.value == method.id {
                     node.event = Some((*method).clone())
                 }
+            }
+        }
+    }
+}
+
+pub struct AddVarsToNodes;
+impl<'a> System<'a> for AddVarsToNodes {
+    type SystemData = (Entities<'a>, WriteStorage<'a, components::Node>, ReadStorage<'a, components::Variable> );
+
+    fn run(&mut self, (entities, mut node_storage, var_storage): Self::SystemData) {
+        for (var, entity) in (&var_storage, &entities).join() {
+            if let Some(node) = node_storage.get_mut(var.node.unwrap()) {
+                node.variables.push(entity)
+            }
+        }
+    }
+}
+pub struct AddVarsToCues;
+impl<'a> System<'a> for AddVarsToCues {
+    type SystemData = (Entities<'a>, WriteStorage<'a, components::Cue>, ReadStorage<'a, components::Variable> );
+
+    fn run(&mut self, (entities, mut cue_storage, var_storage): Self::SystemData) {
+        for (var, entity) in (&var_storage, &entities).join() {
+            if let Some(cue) = cue_storage.get_mut(var.cue.unwrap()) {
+                cue.variables.push(entity)
+            }
+        }
+    }
+}
+pub struct AddNodesToCues;
+impl<'a> System<'a> for AddNodesToCues {
+    type SystemData = (Entities<'a>, WriteStorage<'a, components::Cue>, ReadStorage<'a, components::Node> );
+
+    fn run(&mut self, (entities, mut cue_storage, node_storage): Self::SystemData) {
+        for (node, entity) in (&node_storage, &entities).join() {
+            if let Some(cue) = cue_storage.get_mut(node.cue.unwrap()) {
+                cue.nodes.push(entity)
+            }
+        }
+    }
+}
+pub struct AddCuesToScript;
+impl<'a> System<'a> for AddCuesToScript {
+    type SystemData = (Entities<'a>, WriteStorage<'a, components::Script>, ReadStorage<'a, components::Cue> );
+
+    fn run(&mut self, (entities, mut script_storage, cue_storage): Self::SystemData) {
+        for (cue, entity) in (&cue_storage, &entities).join() {
+            if let Some(script) = script_storage.get_mut(cue.script.unwrap()) {
+                script.cues.push(entity)
             }
         }
     }
