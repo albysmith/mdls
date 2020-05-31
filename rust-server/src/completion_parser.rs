@@ -133,7 +133,7 @@ fn get_node_and_string(params: CompletionParams) -> Option<(usize, String)> {
                 .nth(params.text_document_position.position.line as usize)
             {
                 if let Some(byte_position) = string.find(line) {
-                    return Some((byte_position, string))
+                    return Some((byte_position, string));
                 }
             }
         }

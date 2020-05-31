@@ -23,4 +23,12 @@ mod tests {
         assert!(namespace.is_some());
         assert!(namespace.unwrap().len() == 3)
     }
+    #[test]
+    fn test_recursive_parse() {
+        let test = include_str!("reference/test_ref/md_namespace_basic.xml");
+        let mut world = create_world();
+        if let Ok(doc) = roxmltree::Document::parse(&test) {
+            parse_doc(doc, &mut world, "path".to_string())
+        }
+    }
 }

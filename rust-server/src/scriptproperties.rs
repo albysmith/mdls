@@ -1,6 +1,5 @@
 use serde::Deserialize;
 
-
 #[derive(Debug, Clone)]
 pub struct ScriptProperties {
     pub data: Vec<ApplicableProperties>,

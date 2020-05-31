@@ -67,8 +67,8 @@ pub fn simple_definition(params: GotoDefinitionParams, world: &mut World) -> Vec
                                             if let Some(span) = span_storage.get(entity) {
                                                 info!("{:?}", span.start);
                                                 let def_start_pos =
-                                                    doc.text_pos_at(span.start.bytes);
-                                                let diff = span.end.bytes - span.start.bytes;
+                                                    doc.text_pos_at(span.start);
+                                                let diff = span.end - span.start;
                                                 let def_range = Range {
                                                     start: Position::new(
                                                         def_start_pos.row as u64 - 1,
@@ -114,7 +114,7 @@ fn get_node_and_string(params: &GotoDefinitionParams) -> Option<(usize, String, 
                 .nth(params.text_document_position_params.position.line as usize)
             {
                 if let Some(byte_position) = string.find(line) {
-                    return Some((byte_position, string, path))
+                    return Some((byte_position, string, path));
                 }
             }
         }
