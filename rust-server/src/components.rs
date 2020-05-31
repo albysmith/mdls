@@ -6,10 +6,8 @@ pub struct Variable {
     pub value: String,
     pub script: Option<Entity>,
     pub cue: Option<Entity>,
-
     pub node: Option<Entity>,
     pub name: String,
-
     pub possible_types: Vec<Datatypes>,
     pub path: String,
 }

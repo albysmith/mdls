@@ -21,12 +21,6 @@ pub struct Method {
     pub output: Vec<Output>,
 }
 
-// impl Method {
-//     pub fn match_node_type() -> Vec<Datatypes>{
-
-//     }
-// }
-
 #[derive(Debug, Default, Clone, Deserialize)]
 pub struct MethodList {
     pub methods: Vec<Method>,
