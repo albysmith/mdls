@@ -290,7 +290,7 @@ fn get_types(var: &components::Variable, world: &World) -> Option<Vec<Datatypes>
     None
 }
 
-fn get_namespace_cues(cue_vec: &mut Vec<components::Cue>, world: &World, op_cue: Option<Entity>) {
+pub fn get_namespace_cues(cue_vec: &mut Vec<components::Cue>, world: &World, op_cue: Option<Entity>) {
     let cue_storage = world.read_storage::<components::Cue>();
     if let Some(e) = op_cue {
         if let Some(cue) = cue_storage.get(e) {

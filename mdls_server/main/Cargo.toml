@@ -1,0 +1,30 @@
+[package]
+name = "mdls"
+version = "0.1.0"
+authors = ["albysmith <48844001+albysmith@users.noreply.github.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+roxmltree = "0.11.0"
+lsp-server = "0.3.2"
+lsp-types = "0.74.1"
+flexi_logger = "0.14.0"
+specs = { version = "0.16.1", features = ["shred-derive"] }
+walkdir = "2"
+ron = "*"
+mdls_server = { path = "../providers/primus" }
+
+[dependencies.serde]
+features = ["derive"]
+version = "1.0.83"
+
+[dependencies.serde_json]
+version = "1.0.34"
+
+[dependencies.crossbeam-channel]
+version = "0.4"
+
+[dependencies.log]
+version = "0.4.3"

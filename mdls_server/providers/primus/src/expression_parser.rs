@@ -232,6 +232,8 @@ pub fn infer_types(
             }
             if types.len() > 0 {
                 return Some((types, current_types));
+            } else {
+                
             }
             None
         }
@@ -239,6 +241,7 @@ pub fn infer_types(
         Expressions::Dot | Expressions::Skip | Expressions::StringQuote => None,
     }
 }
+
 // limit system to only current file; hook up to notification for file update?
 // if nothing matches the prior type, then show all?
 // figure out scriptproperty inheritance........

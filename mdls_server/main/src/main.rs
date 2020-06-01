@@ -16,42 +16,15 @@ use lsp_types::*;
 
 use lsp_server::{Connection, Message, Request, RequestId, Response};
 
-mod completion_parser;
-use completion_parser::*;
+use mdls_server::*;
 
-mod definition_parser;
-use definition_parser::*;
 
-mod type_checker;
-// use type_checker::*;
-
-mod type_annotations;
-use type_annotations::*;
-
-mod hover;
-use hover::*;
-
-mod expression_parser;
-// use expression_parser::*;
-
-mod scriptproperties;
-use scriptproperties::*;
-
-mod data_store;
-use data_store::*;
-
-mod systems;
-// use systems::*;
-
-mod components;
-
-mod tests;
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Set up logging. Because `stdio_transport` gets a lock on stdout and stdin, we must have
     // our logging only write out to stderr.
     flexi_logger::Logger::with_str("info").start().unwrap();
     info!("starting generic LSP server");
-
+    
     // Create the transport. Includes the stdio (stdin and stdout) versions but this could
     // also be implemented to use sockets or HTTP.
     let (connection, io_threads) = Connection::stdio();
@@ -159,13 +132,11 @@ fn main_loop(
 ) -> Result<(), Box<dyn Error + Sync + Send>> {
     let _params: InitializeParams = serde_json::from_value(params).unwrap();
     info!("starting example main loop");
-
-    let method_ano = parse_method_ron();
-    let event_ano = parse_event_ron();
-    let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
-
+    let method_ano = type_annotations::parse_method_ron();
+    let event_ano = type_annotations::parse_event_ron();
+    let scriptps = scriptproperties::ScriptProperties::new(include_str!("../../reference/scriptproperties.xml"));
     // let mut world = generate_world(_params.root_uri.clone());
-    let mut world = new_generate_world(_params.root_uri.clone());
+    let mut world = data_store::new_generate_world(_params.root_uri.clone());
     world.insert(method_ano);
     world.insert(event_ano);
     world.insert(scriptps);
@@ -197,12 +168,12 @@ fn main_loop(
                 }
                 let mut request = ReqMessage { req: req };
                 if let Ok((id, params)) = request.cast::<HoverRequest>() {
-                    let resp = new_hover_resp(id, params, &mut world);
+                    let resp = hover::new_hover_resp(id, params, &mut world);
                     connection.sender.send(Message::Response(resp))?;
                     continue;
                 }
                 if let Ok((id, params)) = request.cast::<Completion>() {
-                    let result = CompletionResponse::Array(simple_complete(params));
+                    let result = CompletionResponse::Array(completion_parser::simple_complete(params));
                     let result = serde_json::to_value(&result).unwrap();
                     let resp = Response {
                         id,
@@ -213,7 +184,7 @@ fn main_loop(
                     continue;
                 }
                 if let Ok((id, params)) = request.cast::<GotoDefinition>() {
-                    let result = Some(lsp_types::GotoDefinitionResponse::Array(simple_definition(
+                    let result = Some(lsp_types::GotoDefinitionResponse::Array(definition_parser::simple_definition(
                         params, &mut world,
                     )));
                     let result = serde_json::to_value(&result).unwrap();

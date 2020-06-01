@@ -1,34 +1,36 @@
 #[cfg(test)]
 mod tests {
-    use crate::*;
+    // use crate::*;
+    use mdls_server::*;
+
     #[test]
     fn ron_methods() {
-        let _ron = parse_method_ron();
+        let _ron = type_annotations::parse_method_ron();
     }
     #[test]
     fn ron_events() {
-        let _ron = parse_event_ron();
+        let _ron = type_annotations::parse_event_ron();
     }
     #[test]
     fn scriptproperties() {
-        let _scripts = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
+        let _scripts = scriptproperties::ScriptProperties::new(include_str!("../../../reference/scriptproperties.xml"));
     }
     #[test]
     //test cant fail x.x
     // assert what namespace should be
     fn md_namespace_basic() {
-        let test = include_str!("reference/test_ref/md_namespace_basic.xml");
-        let namespace = parse_namespace((696, test.to_owned()));
+        let test = include_str!("../../../reference/test_ref/md_namespace_basic.xml");
+        let namespace = completion_parser::parse_namespace((696, test.to_owned()));
         println!("{:#?}", namespace);
         assert!(namespace.is_some());
         assert!(namespace.unwrap().len() == 3)
     }
     #[test]
     fn test_recursive_parse() {
-        let test = include_str!("reference/test_ref/md_namespace_basic.xml");
-        let mut world = create_world();
+        let test = include_str!("../../../reference/test_ref/md_namespace_basic.xml");
+        let mut world = data_store::create_world();
         if let Ok(doc) = roxmltree::Document::parse(&test) {
-            parse_doc(doc, &mut world, "path".to_string())
+            data_store::parse_doc(doc, &mut world, "path".to_string())
         }
     }
     #[test]
@@ -68,13 +70,13 @@ mod tests {
     #[test]
     fn type_inference_test() {
         let mut types = vec![];
-        let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
+        let scriptps = scriptproperties::ScriptProperties::new(include_str!("../../../reference/scriptproperties.xml"));
         let find = scriptps.search("owner");
         // println!("{:?}", find);
         for entry in find {
             // println!("{:?}", entry);
 
-            if entry.datatype == Datatypes::Component {
+            if entry.datatype == scriptproperties::Datatypes::Component {
                 types.push(expression_parser::TypeData { exp_type: expression_parser::Expressions::ScriptProperty, property: Some(entry), variable: None, keyword: None })
             }
         }

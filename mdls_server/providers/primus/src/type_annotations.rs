@@ -33,7 +33,7 @@ pub struct Output {
 }
 
 pub fn parse_method_ron() -> MethodList {
-    let string = include_str!("reference/methods.ron");
+    let string = include_str!("../../../reference/methods.ron");
     let methods: MethodList = match ron::from_str(string) {
         Ok(x) => x,
         Err(e) => {
@@ -44,7 +44,7 @@ pub fn parse_method_ron() -> MethodList {
     methods
 }
 pub fn parse_event_ron() -> EventList {
-    let string = include_str!("reference/events.ron");
+    let string = include_str!("../../../reference/events.ron");
     let events: EventList = match ron::from_str(string) {
         Ok(x) => x,
         Err(e) => {
