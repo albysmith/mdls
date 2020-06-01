@@ -10,6 +10,21 @@ pub struct Variable {
     pub name: String,
     pub possible_types: Vec<Datatypes>,
     pub path: String,
+    pub parsed_exp: Vec<Entity>
+}
+#[derive(Debug, Default, Clone)]
+pub struct ParsedExp {
+    pub value: String,
+    pub script: Option<Entity>,
+    pub cue: Option<Entity>,
+    pub node: Option<Entity>,
+    pub variable: Option<Entity>,
+    pub attr_name: String,
+    pub var_type: Option<expression_parser::Expressions>,
+    pub possible_types: Vec<expression_parser::TypeData>,
+    pub filepath: String,
+    pub span_start: usize,
+    pub span_end: usize,
 }
 #[derive(Debug, Default, Clone)]
 pub struct Node {
@@ -47,6 +62,9 @@ pub struct MdPath {
     pub cue: Option<Entity>,
 }
 impl Component for Variable {
+    type Storage = VecStorage<Self>;
+}
+impl Component for ParsedExp {
     type Storage = VecStorage<Self>;
 }
 impl Component for Node {

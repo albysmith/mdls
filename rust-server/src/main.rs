@@ -183,6 +183,7 @@ fn main_loop(
         .with(systems::AddVarsToCues, "AddVarsToCues", &[])
         .with(systems::AddNodesToCues, "AddNodesToCues", &[])
         .with(systems::AddCuesToScript, "AddCuesToScript", &[])
+        .with(systems::ParseExpressions, "ParseExpressions", &["AddCuesToScript", "AddNodesToCues", "AddVarsToNodes", "AddVarsToCues"])
         .with(systems::PrintGraph, "PrintGraph", &["AddCuesToScript", "AddNodesToCues", "AddVarsToNodes", "AddVarsToCues"])
         .build();
 

@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct ScriptProperties {
     pub data: Vec<ApplicableProperties>,
 }
@@ -55,7 +55,7 @@ impl ScriptProperties {
     }
 }
 
-fn match_datatype(string: Option<&str>) -> Datatypes {
+pub fn match_datatype(string: Option<&str>) -> Datatypes {
     match string.expect("datatype or keyword didn't have a name field") {
         "activity" => Datatypes::Activity,
         "adsign" => Datatypes::Adsign,
@@ -240,7 +240,7 @@ pub struct Property {
     pub prop_type: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 pub enum Datatypes {
     Activity,
     Adsign,

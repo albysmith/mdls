@@ -175,7 +175,11 @@ impl<'a> System<'a> for GraphTypingEvents {
 
 pub struct AddVarsToNodes;
 impl<'a> System<'a> for AddVarsToNodes {
-    type SystemData = (Entities<'a>, WriteStorage<'a, components::Node>, ReadStorage<'a, components::Variable> );
+    type SystemData = (
+        Entities<'a>,
+        WriteStorage<'a, components::Node>,
+        ReadStorage<'a, components::Variable>,
+    );
 
     fn run(&mut self, (entities, mut node_storage, var_storage): Self::SystemData) {
         for (var, entity) in (&var_storage, &entities).join() {
@@ -183,11 +187,16 @@ impl<'a> System<'a> for AddVarsToNodes {
                 node.variables.push(entity)
             }
         }
+        info!("vars added to node components")
     }
 }
 pub struct AddVarsToCues;
 impl<'a> System<'a> for AddVarsToCues {
-    type SystemData = (Entities<'a>, WriteStorage<'a, components::Cue>, ReadStorage<'a, components::Variable> );
+    type SystemData = (
+        Entities<'a>,
+        WriteStorage<'a, components::Cue>,
+        ReadStorage<'a, components::Variable>,
+    );
 
     fn run(&mut self, (entities, mut cue_storage, var_storage): Self::SystemData) {
         for (var, entity) in (&var_storage, &entities).join() {
@@ -195,11 +204,16 @@ impl<'a> System<'a> for AddVarsToCues {
                 cue.variables.push(entity)
             }
         }
+        info!("vars added to cue components")
     }
 }
 pub struct AddNodesToCues;
 impl<'a> System<'a> for AddNodesToCues {
-    type SystemData = (Entities<'a>, WriteStorage<'a, components::Cue>, ReadStorage<'a, components::Node> );
+    type SystemData = (
+        Entities<'a>,
+        WriteStorage<'a, components::Cue>,
+        ReadStorage<'a, components::Node>,
+    );
 
     fn run(&mut self, (entities, mut cue_storage, node_storage): Self::SystemData) {
         for (node, entity) in (&node_storage, &entities).join() {
@@ -207,11 +221,16 @@ impl<'a> System<'a> for AddNodesToCues {
                 cue.nodes.push(entity)
             }
         }
+        info!("nodes added to cue components")
     }
 }
 pub struct AddCuesToScript;
 impl<'a> System<'a> for AddCuesToScript {
-    type SystemData = (Entities<'a>, WriteStorage<'a, components::Script>, ReadStorage<'a, components::Cue> );
+    type SystemData = (
+        Entities<'a>,
+        WriteStorage<'a, components::Script>,
+        ReadStorage<'a, components::Cue>,
+    );
 
     fn run(&mut self, (entities, mut script_storage, cue_storage): Self::SystemData) {
         for (cue, entity) in (&cue_storage, &entities).join() {
@@ -219,6 +238,63 @@ impl<'a> System<'a> for AddCuesToScript {
                 script.cues.push(entity)
             }
         }
+        info!("cues added to script components")
     }
 }
 
+pub struct ParseExpressions;
+impl<'a> System<'a> for ParseExpressions {
+    type SystemData = (
+        Entities<'a>,
+        WriteStorage<'a, components::ParsedExp>,
+        WriteStorage<'a, data_store::Span>,
+        ReadStorage<'a, components::Variable>,
+        ReadStorage<'a, components::Node>,
+        Read<'a, ScriptProperties>,
+    );
+
+    fn run(
+        &mut self,
+        (entities, mut exp_storage, span_storage, var_storage, node_storage, scriptps): Self::SystemData,
+    ) {
+        for (var, var_entity, var_span) in (&var_storage, &entities, &span_storage).join() {
+            let expression_chain = expression_parser::parse_expression(var.value.clone());
+            let mut prior_type = vec![Datatypes::Component];
+            for value in expression_chain.iter() {
+                if let Some(node) = node_storage.get(var.node.unwrap()) {
+                    if let Some((types, prior)) = expression_parser::infer_types(
+                        var,
+                        node,
+                        value,
+                        &prior_type,
+                        scriptps.search(&value.text),
+                    ) {
+                        info!("{:?}", types);
+                        info!("{:?}", prior);
+                        prior_type = prior;
+                        let parsed_exp_entity = entities.create();
+                        let _ = exp_storage.insert(
+                            parsed_exp_entity,
+                            components::ParsedExp {
+                                value: value.text.to_owned(),
+                                script: var.script,
+                                cue: var.cue,
+                                node: var.node,
+                                variable: Some(var_entity),
+                                attr_name: var.name.to_owned(),
+                                var_type: Some(value.exp.to_owned()),
+                                possible_types: types,
+                                // possible_types: vec![],
+                                filepath: var.path.to_owned(),
+                                span_start: var_span.start - 1 + value.start,
+                                span_end: var_span.start - 1 + value.end,
+                            },
+                        );
+                    }
+                }
+            }
+        }
+        info!("expression parsing complete");
+        info!("expression_part_count: {:?}", exp_storage.count())
+    }
+}

@@ -53,8 +53,7 @@ mod tests {
         let text4 = "'added ' + $Ship.knownname + ' to ' + (if $DockingBay.isstorage then 'storage dockingbay' else 'external dockingbay') + ' on dockarea.I love ' + $DockingBay.walkablemodule".to_string();
         assert!(
             format!("{:?}", expression_parser::parse_expression(text4))
-                == r#"[ExpValue { text: "$Ship", exp: Variable, start: 12, end: 16 }, ExpValue { text: "knownname", exp: ScriptProperty, start: 18, end: 26 }, ExpValue { text: "$DockingBay", exp: Variable, start: 43, end: 53 }, ExpValue { text: "isstorage", exp: ScriptProperty, start: 55, end: 63 }, ExpValue { text: "$DockingBay", exp: Variable, start: 146, end: 156 }, ExpValue { text: "walkablemodule", exp: ScriptProperty, start: 158, end: 
-             }]"#
+                == r#"[ExpValue { text: "$Ship", exp: Variable, start: 12, end: 16 }, ExpValue { text: "knownname", exp: ScriptProperty, start: 18, end: 26 }, ExpValue { text: "$DockingBay", exp: Variable, start: 43, end: 53 }, ExpValue { text: "isstorage", exp: ScriptProperty, start: 55, end: 63 }, ExpValue { text: "$DockingBay", exp: Variable, start: 146, end: 156 }, ExpValue { text: "walkablemodule", exp: ScriptProperty, start: 158, end: 171 }]"#
         )
     }
     #[test]
@@ -65,5 +64,20 @@ mod tests {
             format!("{:?}", expression_parser::parse_expression(text2))
                 == r#"[ExpValue { text: "$InternalShipsTable", exp: Variable, start: 2, end: 20 }, ExpValue { text: "$DockArea", exp: Key, start: 23, end: 31 }, ExpValue { text: "$ShipMacro", exp: Key, start: 35, end: 44 }, ExpValue { text: "docksize", exp: ScriptProperty, start: 46, end: 54 }, ExpValue { text: "$InternalShipsQuota", exp: Variable, start: 59, end: 77 }]"#
         )
+    }
+    #[test]
+    fn type_inference_test() {
+        let mut types = vec![];
+        let scriptps = ScriptProperties::new(include_str!("reference/scriptproperties.xml"));
+        let find = scriptps.search("owner");
+        // println!("{:?}", find);
+        for entry in find {
+            // println!("{:?}", entry);
+
+            if entry.datatype == Datatypes::Component {
+                types.push(expression_parser::TypeData { exp_type: expression_parser::Expressions::ScriptProperty, property: Some(entry), variable: None, keyword: None })
+            }
+        }
+        println!("{:?}", types)
     }
 }

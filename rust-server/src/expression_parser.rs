@@ -51,10 +51,10 @@ pub enum Expressions {
 
 #[derive(Debug, Clone)]
 pub struct ExpValue {
-    text: String,
-    exp: Expressions,
-    start: usize,
-    end: usize,
+    pub text: String,
+    pub exp: Expressions,
+    pub start: usize,
+    pub end: usize,
 }
 
 impl ExpValue {
@@ -175,4 +175,96 @@ pub fn parse_expression(expression: String) -> Vec<ExpValue> {
         }
     }
     values
+}
+#[derive(Debug, Clone)]
+
+pub struct TypeData {
+    pub exp_type: expression_parser::Expressions,
+    pub property: Option<Property>,
+    pub variable: Option<Datatypes>,
+    pub keyword: Option<Datatypes>,
+}
+
+pub fn infer_types(
+    var: &components::Variable,
+    node: &components::Node,
+    exp_value: &expression_parser::ExpValue,
+    prior_type: &Vec<Datatypes>,
+    scriptps: Vec<Property>,
+) -> Option<(Vec<TypeData>, Vec<Datatypes>)> {
+    match exp_value.exp {
+        Expressions::Variable | Expressions::Key => {
+            let mut types = vec![];
+            let mut current_types = vec![];
+            if let Some(data_types) = get_method_types(var, node) {
+                for d in data_types.iter() {
+                    types.push(TypeData {
+                        exp_type: exp_value.exp.to_owned(),
+                        property: None,
+                        variable: Some(d.to_owned()),
+                        keyword: None,
+                    })
+                }
+                current_types = data_types;
+            }
+            if types.len() > 0 {
+                return Some((types, current_types));
+            }
+            None
+        }
+        Expressions::ScriptProperty => {
+            let mut types = vec![];
+            let mut current_types = vec![];
+            for prior in prior_type.into_iter() {
+                for entry in &scriptps {
+                    if entry.datatype == prior.to_owned() {
+                        if let Some(prop_type) = &entry.prop_type {
+                            current_types.push(match_datatype(Some(prop_type)));
+                        }
+                        types.push(TypeData {
+                            exp_type: exp_value.exp.to_owned(),
+                            property: Some(entry.to_owned()),
+                            variable: None,
+                            keyword: None,
+                        })
+                    }
+                }
+            }
+            if types.len() > 0 {
+                return Some((types, current_types));
+            }
+            None
+        }
+        Expressions::Keyword => None,
+        Expressions::Dot | Expressions::Skip | Expressions::StringQuote => None,
+    }
+}
+// limit system to only current file; hook up to notification for file update?
+// if nothing matches the prior type, then show all?
+// figure out scriptproperty inheritance........
+// add variable handling with namespace checking, etc. like in Hover
+    // currently only handles variable creation point, which is useless for scriptproperties
+
+fn get_method_types(var: &components::Variable, node: &components::Node) -> Option<Vec<Datatypes>> {
+    if let Some(method) = &node.method {
+        for output in method.output.iter() {
+            if output.attr == var.name {
+                if let Some(types) = &output.datatype {
+                    let mut type_vec = vec![];
+                    for value in types {
+                        type_vec.push(value.to_owned());
+                    }
+                    if let Some(types) = &output.contains {
+                        for value in types {
+                            if !type_vec.contains(value) {
+                                type_vec.push(value.to_owned());
+                            }
+                        }
+                        return Some(type_vec);
+                    }
+                }
+            }
+        }
+    }
+    None
 }

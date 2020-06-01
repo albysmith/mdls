@@ -124,6 +124,7 @@ pub fn create_world() -> World {
     world.register::<components::Cue>();
     world.register::<components::Node>();
     world.register::<components::Variable>();
+    world.register::<components::ParsedExp>();
     world
 }
 
