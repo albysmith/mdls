@@ -1,4 +1,3 @@
-// use log::info;
 use lsp_server::{RequestId, Response};
 use lsp_types::{Hover, HoverParams, MarkedString};
 use std::fs;
@@ -7,11 +6,7 @@ use std::path::PathBuf;
 use crate::*;
 
 pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptProperties) -> Response {
-    // info!("called hover function");
-
-    // get &str for what I'm hovering on
     if let Some((string, path)) = get_string_and_path(&params) {
-        // let file_uri = params.text_document_position_params.text_document.uri;
         let line = string
             .lines()
             .nth(params.text_document_position_params.position.line as usize);
@@ -22,10 +17,8 @@ pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptPrope
             .clone() as usize;
         if let Ok(line_doc) = roxmltree::Document::parse(&line.unwrap()) {
             let node = line_doc.root().first_child().unwrap();
-            // info!("HOVER line_doc node: {:?}", node.tag_name());
             for attr in node.attributes() {
                 if attr.value_range().end > character && attr.value_range().start < character {
-                    // now we have the attribute
                     let char_into_attr = character - attr.value_range().start;
                     let mut target = String::new();
                     let mut flag = false;
@@ -48,11 +41,7 @@ pub fn get_hover_resp(id: RequestId, params: HoverParams, scriptps: &ScriptPrope
                             }
                         }
                     }
-                    // do something with target here
-                    // check against scriptproperties
                     let find = scriptps.search(&target);
-
-                    // make everything the right type
                     let mut hovers = vec![];
                     for entry in find.iter() {
                         hovers.push(MarkedString::String(format!(
@@ -149,9 +138,6 @@ fn get_hover_values(params: HoverParams, world: &World) -> Vec<MarkedString> {
                 byte_number += hover_character;
                 let variable_storage = world.read_storage::<components::Variable>();
                 let span_storage = world.read_storage::<Span>();
-                // let node_storage = world.read_storage::<components::Node>();
-                // let cue_storage = world.read_storage::<components::Cue>();
-
                 let entities = world.entities();
                 for (span, var, entity) in (&span_storage, &variable_storage, &entities).join() {
                     if PathBuf::from(&var.path) == path {
@@ -262,14 +248,9 @@ fn get_types(var: &components::Variable, world: &World) -> Option<Vec<Datatypes>
     let variable_storage = world.read_storage::<components::Variable>();
 
     if let Some(node) = node_storage.get(var.node.unwrap()) {
-        // info!("node: {:?}", node);
         if let Some(method) = &node.method {
-            // info!("method: {:?}", method);
             for output in method.output.iter() {
-                // info!("output: {:?}", output);
-                // info!("output.attr: {:?} var.name: {:?}", output.attr, var.name);
                 if output.attr == var.name {
-                    // info!("matched");
                     let mut multiple = false;
                     for attribute in node.variables.iter() {
                         if let Some(comp) = variable_storage.get(attribute.to_owned()) {
@@ -283,19 +264,21 @@ fn get_types(var: &components::Variable, world: &World) -> Option<Vec<Datatypes>
                     if multiple == true {
                         if let Some(types) = &output.datatype {
                             let mut type_vec = vec![];
-                            // info!("types: {:?}", types);
                             for value in types {
-                                // info!("value: {:?}", value);
                                 type_vec.push(value.to_owned());
                             }
                             return Some(type_vec);
                         }
-                    } 
+                    }
                     if let Some(types) = &output.contains {
                         let mut type_vec = vec![];
-                        // info!("types: {:?}", types);
                         for value in types {
-                            // info!("value: {:?}", value);
+                            type_vec.push(value.to_owned());
+                        }
+                        return Some(type_vec);
+                    } else if let Some(types) = &output.datatype {
+                        let mut type_vec = vec![];
+                        for value in types {
                             type_vec.push(value.to_owned());
                         }
                         return Some(type_vec);
@@ -307,7 +290,7 @@ fn get_types(var: &components::Variable, world: &World) -> Option<Vec<Datatypes>
     None
 }
 
-fn get_namespace_cues(cue_vec: &mut Vec<components::Cue>, world: &World, op_cue: Option<Entity>) {
+pub fn get_namespace_cues(cue_vec: &mut Vec<components::Cue>, world: &World, op_cue: Option<Entity>) {
     let cue_storage = world.read_storage::<components::Cue>();
     if let Some(e) = op_cue {
         if let Some(cue) = cue_storage.get(e) {
@@ -315,4 +298,37 @@ fn get_namespace_cues(cue_vec: &mut Vec<components::Cue>, world: &World, op_cue:
             get_namespace_cues(cue_vec, world, cue.parent)
         }
     }
+}
+
+pub fn new_get_hover_values(params: HoverParams, world: &World) -> Vec<MarkedString> {
+    let mut type_vec = vec![];
+    if let Some((string, path)) = get_string_and_path(&params) {
+        let mut byte_number = 0;
+        let hover_character = params
+            .text_document_position_params
+            .position
+            .character
+            .clone() as usize;
+        let hover_line = params.text_document_position_params.position.line.clone() as usize;
+        for (i, line) in string.lines().enumerate() {
+            if i == hover_line {
+                byte_number += hover_character;
+                let variable_storage = world.read_storage::<components::Variable>();
+                let span_storage = world.read_storage::<Span>();
+                let entities = world.entities();
+                for (span, var, entity) in (&span_storage, &variable_storage, &entities).join() {
+                    if PathBuf::from(&var.path) == path {
+                        if byte_number > span.start && byte_number < span.end {
+                            let expression_chain =
+                                expression_parser::parse_expression(var.value.to_owned());
+                            
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    type_vec
 }

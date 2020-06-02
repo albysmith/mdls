@@ -11,7 +11,6 @@ pub fn simple_definition(params: GotoDefinitionParams, world: &mut World) -> Vec
     if let Some((_byte_position, string, file_path)) = get_node_and_string(&params) {
         let file_uri = params.text_document_position_params.text_document.uri;
         if let Ok(doc) = roxmltree::Document::parse(&string) {
-            // let file_uri = params.text_document_position_params.text_document.uri;
             let line = string
                 .lines()
                 .nth(params.text_document_position_params.position.line as usize);
@@ -54,8 +53,6 @@ pub fn simple_definition(params: GotoDefinitionParams, world: &mut World) -> Vec
                                 }
                             }
                         }
-                        // let def_start = string.find(&target).unwrap();
-                        // use target to get position of matching variable on our ecs world
                         let variable_storage = world.read_storage::<Variable>();
                         let file_storage = world.read_storage::<File>();
                         let span_storage = world.read_storage::<Span>();
@@ -84,7 +81,6 @@ pub fn simple_definition(params: GotoDefinitionParams, world: &mut World) -> Vec
                                                     uri: file_uri.clone(),
                                                     range: def_range,
                                                 });
-                                                // break;
                                             }
                                         }
                                     }

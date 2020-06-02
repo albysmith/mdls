@@ -8,7 +8,6 @@ use walkdir::WalkDir;
 trait ComponentType {
     fn create_component<T: Component>(x: T, world: &mut World, entity: Entity) {
         let _x = world.write_component::<T>().insert(entity, x);
-        // info!("create_component: happened");
     }
 }
 
@@ -125,6 +124,7 @@ pub fn create_world() -> World {
     world.register::<components::Cue>();
     world.register::<components::Node>();
     world.register::<components::Variable>();
+    world.register::<components::ParsedExp>();
     world
 }
 
@@ -247,8 +247,6 @@ pub fn go_to_def_temp(paths: &Option<Vec<File>>, world: &mut World) {
                     for node in doc.descendants() {
                         for attr in node.attributes() {
                             if attr.name() == "name" {
-                                // let start_pos = doc.text_pos_at(attr.value_range().start);
-                                // let end_pos = doc.text_pos_at(attr.value_range().end);
                                 let start_pos = attr.value_range().start;
                                 let end_pos = attr.value_range().end;
                                 world
@@ -283,7 +281,6 @@ pub fn new_generate_world(workspace_uri: Option<Url>) -> World {
         for file in files1.iter() {
             if let Ok(string) = fs::read_to_string(&file.path) {
                 if let Ok(doc) = roxmltree::Document::parse(&string) {
-                    // parse_doc_to_components(doc, &mut world)
                     parse_doc(doc, &mut world, file.path.to_str().unwrap().to_string())
                 }
             }
