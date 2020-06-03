@@ -17,6 +17,7 @@ use lsp_types::*;
 use lsp_server::{Connection, Message, Request, RequestId, Response};
 
 use mdls_server::*;
+use lsp_types::RenameProviderCapability::Options;
 
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
@@ -24,7 +25,7 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // our logging only write out to stderr.
     flexi_logger::Logger::with_str("info").start().unwrap();
     info!("starting generic LSP server");
-    
+
     // Create the transport. Includes the stdio (stdin and stdout) versions but this could
     // also be implemented to use sockets or HTTP.
     let (connection, io_threads) = Connection::stdio();
@@ -130,16 +131,48 @@ fn main_loop(
     connection: &Connection,
     params: serde_json::Value,
 ) -> Result<(), Box<dyn Error + Sync + Send>> {
-    let _params: InitializeParams = serde_json::from_value(params).unwrap();
+    let mut world = build_world(serde_json::from_value(params).unwrap());
+
+    for msg in &connection.receiver {
+        match msg {
+            Message::Request(req) => {
+                if connection.handle_shutdown(&req)? {
+                    return Ok(());
+                }
+                let mut request = ReqMessage { req };
+                if let response = handle_hover(&mut world, &mut request) {
+                    handle_request(connection, response);
+                }
+                if let response = handle_completion(&mut request) {
+                    handle_request(connection, response);
+                }
+                if let response = handle_goto(&mut world, &mut request) {
+                    handle_request(connection, response);
+                }
+            }
+            Message::Response(_resp) => {}
+            Message::Notification(_not) => {}
+        }
+    }
+    Ok(())
+}
+
+fn handle_request(connection: &Connection, response: Option<Response>) {
+    if response.is_some() {
+        connection.sender.send(Message::Response(response.unwrap()));
+    }
+}
+
+fn build_world(params: InitializeParams) -> World {
     info!("starting example main loop");
     let method_ano = type_annotations::parse_method_ron();
     let event_ano = type_annotations::parse_event_ron();
-    let scriptps = scriptproperties::ScriptProperties::new(include_str!("../../reference/scriptproperties.xml"));
+    let script_properties = scriptproperties::ScriptProperties::new(include_str!("../../reference/scriptproperties.xml"));
     // let mut world = generate_world(_params.root_uri.clone());
-    let mut world = data_store::new_generate_world(_params.root_uri.clone());
+    let mut world = data_store::new_generate_world(params.root_uri.clone());
     world.insert(method_ano);
     world.insert(event_ano);
-    world.insert(scriptps);
+    world.insert(script_properties);
     world.maintain();
     let mut dispatcher = DispatcherBuilder::new()
         // .with(systems::PrintMe, "printme", &[])
@@ -159,51 +192,47 @@ fn main_loop(
         .build();
 
     dispatcher.dispatch(&mut world);
+    world
+}
 
-    for msg in &connection.receiver {
-        match msg {
-            Message::Request(req) => {
-                if connection.handle_shutdown(&req)? {
-                    return Ok(());
-                }
-                let mut request = ReqMessage { req: req };
-                if let Ok((id, params)) = request.cast::<HoverRequest>() {
-                    let resp = hover::new_hover_resp(id, params, &mut world);
-                    connection.sender.send(Message::Response(resp))?;
-                    continue;
-                }
-                if let Ok((id, params)) = request.cast::<Completion>() {
-                    let result = CompletionResponse::Array(completion_parser::simple_complete(params));
-                    let result = serde_json::to_value(&result).unwrap();
-                    let resp = Response {
-                        id,
-                        result: Some(result),
-                        error: None,
-                    };
-                    connection.sender.send(Message::Response(resp))?;
-                    continue;
-                }
-                if let Ok((id, params)) = request.cast::<GotoDefinition>() {
-                    let result = Some(lsp_types::GotoDefinitionResponse::Array(definition_parser::simple_definition(
-                        params, &mut world,
-                    )));
-                    let result = serde_json::to_value(&result).unwrap();
-                    let resp = Response {
-                        id,
-                        result: Some(result),
-                        error: None,
-                    };
-                    connection.sender.send(Message::Response(resp))?;
-                    continue;
-                }
-            }
-            Message::Response(_resp) => {
-            }
-            Message::Notification(_not) => {
-            }
-        }
+fn handle_hover(world: &mut World, request: &mut ReqMessage) -> Option<Response> {
+    let cast_result = request.cast::<HoverRequest>();
+    if cast_result.is_err() {
+        return Option::None;
     }
-    Ok(())
+    let (id, params) = cast_result.unwrap();
+    Option::from(hover::new_hover_resp(id, params, world))
+}
+
+fn handle_completion(request: &mut ReqMessage) -> Option<Response> {
+    let cast_result = request.cast::<Completion>();
+    if cast_result.is_err() {
+        return Option::None;
+    }
+    let (id, params) = cast_result.unwrap();
+    let result = serde_json::to_value(&CompletionResponse::Array(completion_parser::simple_complete(params))).unwrap();
+    Option::from(Response {
+        id,
+        result: Some(result),
+        error: None,
+    })
+}
+
+fn handle_goto(world: &mut World, request: &mut ReqMessage) -> Option<Response> {
+    let cast_result = request.cast::<GotoDefinition>();
+    if cast_result.is_err() {
+        return Option::None;
+    }
+    let (id, params) = cast_result.unwrap();
+    let result = Some(lsp_types::GotoDefinitionResponse::Array(definition_parser::simple_definition(
+        params, world,
+    )));
+    let result = serde_json::to_value(&result).unwrap();
+    Option::from(Response {
+        id,
+        result: Some(result),
+        error: None,
+    })
 }
 
 #[derive(Clone)]
@@ -213,9 +242,9 @@ struct ReqMessage {
 
 impl ReqMessage {
     fn cast<R>(&mut self) -> Result<(RequestId, R::Params), Request>
-    where
-        R: lsp_types::request::Request,
-        R::Params: serde::de::DeserializeOwned,
+        where
+            R: lsp_types::request::Request,
+            R::Params: serde::de::DeserializeOwned,
     {
         self.clone().req.extract(R::METHOD)
     }
